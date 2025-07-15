@@ -10,7 +10,7 @@ CODE 😳    DATA
 
 	...  -> DATA (Self explanatory)
 
-*) Every request that doesnt follow the schema should be responded by a error
+? Every request that doesnt follow the schema should be responded by a error
 
 VALID CODES: 
     Client -> Server
@@ -18,15 +18,44 @@ VALID CODES:
 000: Ping 
 999: Disconnect (Empty)
 
-069: Echo
+001: Echo
+069: Funny
 
-1XX: Fetch info.
+  1XX: Fetch info.
+*101 -> Lista todas las agencias de la tabla Agencia
+*102 -> Lista los dnis de los clientes de la tabla Cliente
+*103 -> Lista los clientes de la Tabla Cliente
+*104 -> Lista los automoviles de la tabla Automovil
+*105 -> Lista los nombres de los garajes de la tabla Garaje
+*106 -> Lista las reservas de la tabla Reserva
+*107 -> Lista los nombres de las agencias
+*108 -> Lista las placas de los automoviles
+*109 -> Lista las ids de las reservas de la tabla Reserva
+
+111 (..) 199 -> Reservado
+
 
 
 	Server -> Client
 000: Ping response
 999: Disconnection reply
 
-069: Echo reply
+001: Echo reply
+069: Funny reply
 
-2XX: Reply of the corresponding fetch
+201 -> Respuesta de lista todas las agencias de la tabla Agencia
+202 -> Respuesta de lista todas las agencias de la tabla Agencia
+203 -> Respuesta de lista los dnis de los clientes de la tabla Cliente
+204 -> Respuesta de lista los clientes de la Tabla Cliente
+205 -> Respuesta de lista los automoviles de la tabla Automovil
+206 -> Respuesta de lista los nombres de los garajes de la tabla Garaje
+207 -> Respuesta de lista las reservas de la tabla Reserva
+208 -> Respuesta de lista los nombres de las agencias
+209 -> Respuesta de lista las placas de los automoviles
+210 -> Respuesta de lista las ids de las reservas de la tabla Reserva
+
+211 (..) 299 -> Reservado
+
+
+900 -> SQL Exception
+901 -> ClassNotFoundException
