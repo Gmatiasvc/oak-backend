@@ -34,8 +34,15 @@ VALID CODES:
 
 111 (..) 199 -> Reservado
 
+*301 -> Añade una agencia a la tabla Agencia
+*302 -> Añade un garaje a la tabla Garaje
+*303 -> Añade un cliente a la tabla Cliente
+*304 -> Añade un cliente a la tabla Cliente pero con Sponsor
+*305 -> Añade un automovil a la tabla Automovil
+*306 -> Añade una reserva a la tabla Reserva
+*307 -> Asigna un auto a una reserva
 
-
+308 (..) 399 -> Reservado
 	Server -> Client
 000: Ping response
 999: Disconnection reply
@@ -56,6 +63,9 @@ VALID CODES:
 
 211 (..) 299 -> Reservado
 
+800 -> Sucess
+801 -> Failture
 
 900 -> SQL Exception
 901 -> ClassNotFoundException
+902 -> ParseException

@@ -1,6 +1,9 @@
 package server;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class RequestHandler {
@@ -21,6 +24,23 @@ public class RequestHandler {
 
 		return array;
 	}
+
+	
+	public static String arrayDeconstructor(ArrayList<String> array) {
+		if (array == null || array.isEmpty()) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		for (String item : array) {
+			if (sb.length() > 0) {
+				sb.append("|");
+			}
+			sb.append(item.trim());
+		}
+		return sb.toString();
+	}
+
+
     private String trimCode(String request) {
         if (request.length() >= 3) {
             return request.substring(0, 3);
@@ -239,6 +259,265 @@ public class RequestHandler {
 				return "901 " + e.getMessage();
 			}
 			return ids;
+        } 
+		
+		
+		else if (code.equals("301")) {
+			ArrayList<String> agencias = arrayReconstructor(request.substring(4));
+			if (agencias.size() < 2) {
+				return "801 Not enough data";
+			}
+			String nombre = agencias.get(0);
+			String direccion = agencias.get(1);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("INSERT INTO Agencia (nombre, direccion) VALUES (?, ?)")) {
+				stmt.setString(1, nombre);
+				stmt.setString(2, direccion);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+
+		
+		else if (code.equals("302")) {
+			ArrayList<String> clientes = arrayReconstructor(request.substring(4));
+			if (clientes.size() < 2) {
+				return "801 Not enough data";
+			}
+			String nombre = clientes.get(0);
+			String direccion = clientes.get(1);
+
+			try (Connection cn = DBConnection.realizarConexion(); PreparedStatement stmt = cn.prepareStatement("INSERT INTO Garaje (nombre, ubicacion) VALUES (?, ?)")) {
+				stmt.setString(1, nombre);
+				stmt.setString(2, direccion);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+		
+
+		else if (code.equals("303")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 4) {
+				return "801 Not enough data";
+			}
+			String dni = datos.get(0);
+			String nombre = datos.get(1);
+			String direccion = datos.get(2);
+			String telefono = datos.get(3);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("INSERT INTO Cliente (dni, nombre, direccion, telefono) VALUES (?, ?, ?, ?)")) {
+				stmt.setString(1, dni);
+				stmt.setString(2, nombre);
+				stmt.setString(3, direccion);
+				stmt.setString(4, telefono);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+		
+
+		else if (code.equals("304")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 5) {
+				return "801 Not enough data";
+			}
+			String dni = datos.get(0);
+			String nombre = datos.get(1);
+			String direccion = datos.get(2);
+			String telefono = datos.get(3);
+			String sponsor = datos.get(4);
+			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT cliente_id FROM Cliente where dni = '" + sponsor + "'")) {
+				while (rs.next()) {
+					sponsor = rs.getString("cliente_id");
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+	
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("INSERT INTO Cliente (dni, nombre, direccion, telefono, sponsor_id) VALUES (?, ?, ?, ?, ?)")) {
+				stmt.setString(1, dni);
+				stmt.setString(2, nombre);
+				stmt.setString(3, direccion);
+				stmt.setString(4, telefono);
+				stmt.setString(5, sponsor);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+		
+
+		else if (code.equals("305")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 5) {
+				return "801 Not enough data";
+			}
+			String placa = datos.get(0);
+			String modelo = datos.get(1);
+			String color = datos.get(2);
+			String marca = datos.get(3);
+			String garaje_nombre = datos.get(4);
+
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("INSERT INTO Automovil (placa, modelo, color, marca, garaje_id) VALUES (?, ?, ?, ?, ?)")) {
+				stmt.setString(1, placa);
+				stmt.setString(2, modelo);
+				stmt.setString(3, color);
+				stmt.setString(4, marca);
+	
+				String garajeId = "";
+				try (Statement stmt2 = conn.createStatement(); ResultSet rs = stmt2.executeQuery("SELECT garaje_id FROM Garaje WHERE nombre = '" + garaje_nombre + "'")) {
+					if (rs.next()) {
+						garajeId = rs.getString("garaje_id");
+					}
+				}
+	
+				if (garajeId != null) {
+					stmt.setString(5, garajeId);
+					int rowsAffected = stmt.executeUpdate();
+					if (rowsAffected > 0) {
+						return "800";
+					} else {
+						return "801";
+					}
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+		
+		
+		else if (code.equals("306")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 6) {
+				return "801 Not enough data";
+			}
+			String clienteDNI = datos.get(0);
+			String AgenciaNombre = datos.get(1);
+			String fechaInicio = datos.get(2);
+			String fechaFin = datos.get(3);
+			String precio = datos.get(4);
+			String entregadoString = datos.get(5);
+
+					String entregado = "0";
+		if ("No Entregado".equals(entregadoString)){
+			entregado = "0";
+		} 
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date fechaInicioDate;
+		Date fechaFinDate;
+		
+		try {
+			fechaFinDate = new java.sql.Date(dateFormat.parse(fechaFin).getTime());
+			fechaInicioDate = new java.sql.Date(dateFormat.parse(fechaInicio).getTime());
+		} catch (ParseException e) {
+			return "902 " + e.getMessage();
+		}
+
+	
+
+		try (Connection conn = DBConnection.realizarConexion();
+			PreparedStatement stmt = conn.prepareStatement("INSERT INTO Reserva (cliente_id, agencia_id, fecha_inicio, fecha_fin, precio_total, entregado) VALUES (?, ?, ?, ?, ?, ?)")) {
+
+			String clienteId = "";
+			try (Statement stmt2 = conn.createStatement(); ResultSet rs = stmt2.executeQuery("SELECT cliente_id FROM Cliente WHERE dni = '" + clienteDNI + "'")) {
+				if (rs.next()) {
+					clienteId = rs.getString("cliente_id");
+				}
+			}
+
+			String agenciaId = "";
+			try (Statement stmt3 = conn.createStatement(); ResultSet rs2 = stmt3.executeQuery("SELECT agencia_id FROM Agencia WHERE nombre = '" + AgenciaNombre + "'")) {
+				if (rs2.next()) {
+					agenciaId = rs2.getString("agencia_id");
+				}
+			}
+
+			stmt.setString(1, clienteId);
+			stmt.setString(2, agenciaId);
+			stmt.setTimestamp(3, new Timestamp(fechaInicioDate.getTime()));
+			stmt.setTimestamp(4, new Timestamp(fechaFinDate.getTime()));
+			stmt.setString(5, precio);
+			stmt.setString(6, entregado);
+
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+				return "800";
+			} else {
+				return "801";
+			}
+		} catch (SQLException e) {
+			return "900 " + e.getMessage();
+		} catch (ClassNotFoundException e) {
+			return "901 " + e.getMessage();
+		}
+        } 
+		
+		
+		else if (code.equals("307")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 4) {
+				return "801 Not enough data";
+			}
+			String placa = datos.get(0);
+			String reservaId = datos.get(1);
+			String precio_Alquiler = datos.get(2);
+			String litros_Inicial = datos.get(3);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("INSERT INTO Reserva_Automovil (reserva_id, placa, precio_alquiler,litros_inicial) VALUES (?, ?, ?, ?) on duplicate key update precio_alquiler = ?, litros_inicial = ?")) {
+			
+				stmt.setString(1, reservaId);
+				stmt.setString(2, placa);
+				stmt.setString(3, precio_Alquiler);
+				stmt.setString(4, litros_Inicial);
+				stmt.setString(5, precio_Alquiler);
+				stmt.setString(6, litros_Inicial);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+	
         } 
 		
 		
