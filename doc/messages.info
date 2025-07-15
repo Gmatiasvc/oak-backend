@@ -1,0 +1,32 @@
+
+COMMS SCHEMA:
+
+CODE 😳    DATA
+ XXX     ...
+
+  XXX 😳 -> CODE (see table below)
+
+    SEPARATOR??? No separator
+
+	...  -> DATA (Self explanatory)
+
+*) Every request that doesnt follow the schema should be responded by a error
+
+VALID CODES: 
+    Client -> Server
+
+000: Ping 
+999: Disconnect (Empty)
+
+069: Echo
+
+1XX: Fetch info.
+
+
+	Server -> Client
+000: Ping response
+999: Disconnection reply
+
+069: Echo reply
+
+2XX: Reply of the corresponding fetch

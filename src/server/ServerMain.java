@@ -14,10 +14,8 @@ public class ServerMain {
 
     private static final int PORT = 6969; // Funi port
     // Define the size of our thread pool.
-	
 
     private static final int THREAD_POOL_SIZE = 5; // Allows 5 clients to be processed concurrently
-
 
     public static void main(String[] args) {
         // Create a fixed-size thread pool.
@@ -56,7 +54,7 @@ public class ServerMain {
             VanityConsole.panic("Server failed to start. " + e.getMessage());
             // If the server fails to start, we should exit the application.
             System.exit(1);
-			
+
         } finally {
             // It's crucial to shut down the executor service when the server application is closing.
             // This prevents resource leaks and ensures all submitted tasks are completed or gracefully terminated.
@@ -90,6 +88,7 @@ public class ServerMain {
 
         private Socket clientSocket;
         private String clientAddress;
+		private Processor processor = new Processor(); // Instance of Connection class to process requests
 
         public ClientHandler(Socket clientSocket, String clientAddress) {
             this.clientSocket = clientSocket;
@@ -102,7 +101,7 @@ public class ServerMain {
             try (
                     // Get input stream to read data from the client
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // Get output stream to send data to the client, 'true' for auto-flushing
-                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);) {
+                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);) {
                 String inputLine;
                 VanityConsole.info("Handler for " + clientAddress + " started.");
 
@@ -111,11 +110,16 @@ public class ServerMain {
                 while ((inputLine = in.readLine()) != null) {
                     VanityConsole.shout("Received from " + clientAddress + ": " + inputLine);
 
-                    // Process the request (in this simple case, just echo it back)
-                    String response = "Echo from server [" + Thread.currentThread().getName() + "]: " + inputLine;
-                    out.println(response); // Send response back to client
+                    // Process the request 
+					String response = processor.processRequest(inputLine); // Process the request using the Connection class
+					
+					// Send the response back to the client
+					out.println(response);
+					out.flush();
 
-                    if (inputLine.equalsIgnoreCase("bye")) {
+					VanityConsole.shout("Sent to " + clientAddress + ": " + response);
+
+                      if (inputLine.equalsIgnoreCase("bye")) {
                         break; // Client requested to close connection
                     }
                 }
