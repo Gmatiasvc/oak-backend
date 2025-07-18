@@ -84,6 +84,7 @@ public class ServerMain {
      * instance of this class will run in its own thread from the
      * ExecutorService pool.
      */
+	@SuppressWarnings("FieldMayBeFinal")
     private static class ClientHandler implements Runnable {
 
         private Socket clientSocket;
