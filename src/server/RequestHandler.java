@@ -140,7 +140,7 @@ public class RequestHandler {
 		
 		
 		else if (code.equals("104")) {
-			String automoviles = "204 108s";
+			String automoviles = "204 ";
 			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Automovil")) {
 				while (rs.next()) {
 					String garajeNombre = "";
@@ -388,13 +388,15 @@ public class RequestHandler {
 			String modelo = datos.get(1);
 			String color = datos.get(2);
 			String marca = datos.get(3);
-			String garaje_nombre = datos.get(4);
+			String estado = datos.get(4);
+			String garaje_nombre = datos.get(5);
 
-			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("INSERT INTO Automovil (placa, modelo, color, marca, garaje_id) VALUES (?, ?, ?, ?, ?)")) {
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("INSERT INTO Automovil (placa, modelo, color, marca,estado, garaje_id) VALUES (?, ?, ?, ?, ?, ?)")) {
 				stmt.setString(1, placa);
 				stmt.setString(2, modelo);
 				stmt.setString(3, color);
 				stmt.setString(4, marca);
+				stmt.setString(5, estado);
 	
 				String garajeId = "";
 				try (Statement stmt2 = conn.createStatement(); ResultSet rs = stmt2.executeQuery("SELECT garaje_id FROM Garaje WHERE nombre = '" + garaje_nombre + "'")) {
@@ -404,7 +406,7 @@ public class RequestHandler {
 				}
 	
 				if (garajeId != null) {
-					stmt.setString(5, garajeId);
+					stmt.setString(6, garajeId);
 					int rowsAffected = stmt.executeUpdate();
 					if (rowsAffected > 0) {
 						return "800";

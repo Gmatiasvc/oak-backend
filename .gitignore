@@ -1,3 +1,4 @@
 /.vscode
 /bin
 /src/server/DBConnection.java
+/test/__pycache__/

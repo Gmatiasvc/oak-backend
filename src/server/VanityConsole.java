@@ -12,8 +12,6 @@ public class VanityConsole {
 	private static final String COLOR_YELLOW = "\u001B[33m"; // Yellow color
 	private static final String COLOR_BLUE = "\u001B[34m"; // Blue color
 	private static final String COLOR_PURPLE = "\u001B[35m"; // Purple color
-	private static final String COLOR_CYAN = "\u001B[36m"; // Cyan color
-	private static final String COLOR_WHITE = "\u001B[37m"; // White color
 	private static final String COLOR_BOLD = "\u001B[1m"; // Bold text
 
     // Format for logging timestamps
@@ -42,8 +40,8 @@ public class VanityConsole {
 
 
 	 
-	public static void main(String[] args) {
-		shout("Not unit testing, but this does the trick");
+	public static void test() {
+		shout("This is a test message, it should be white with a purple timestamp");
 		error("This is a error message, it should be red");
 		info("This is an info message, it should be green");
 		debug("This is a debug message, it should be blue");
