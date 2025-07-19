@@ -34,8 +34,6 @@ VALID CODES:
 *104 -> Lista los automoviles de la tabla Automovil
 		* Placa | Modelo | Color | Marca | Estado | Garaje
 
-! DEPRECATE  *105 -> Lista los nombres de los garajes de la tabla Garaje
-
 *105 -> Lista las reservas de la tabla Reserva
 		* Reserva | Automoviles | Cliente | Agencia | Fecha inicio | Fecha fin | Precio total | Entregado
 
@@ -43,7 +41,7 @@ VALID CODES:
 
 *301 -> Añade una agencia a la tabla Agencia
 *302 -> Añade un garaje a la tabla Garaje
-*303 -> Añade un cliente a la tabla Cliente
+*303 -> Añade un cliente a la tabla Cliente pero sin Sponsor
 *304 -> Añade un cliente a la tabla Cliente pero con Sponsor
 *305 -> Añade un automovil a la tabla Automovil
 *306 -> Añade una reserva a la tabla Reserva
@@ -51,7 +49,7 @@ VALID CODES:
 *308 -> Actualiza una fila de la tabla Agencia usando agencia_id
 *309 -> Actualiza una fila de la tabla Garaje usando garaje_id
 *310 -> Actualiza una fila de la tabla Automovil usando automovil_id
-*311 -> Actualiza una fila de la tabla Cliente usando cliente_id
+*311 -> Actualiza una fila de la tabla Cliente usando dni
 
 
 

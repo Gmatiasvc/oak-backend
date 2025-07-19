@@ -4,7 +4,11 @@
  */
 package client.gui.presentacion.Administrador;
 
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
 import client.ClientInstance;
+import client.RequestHandler;
 
 /**
  *
@@ -19,8 +23,37 @@ public class PanGestionClientesAdministrador extends javax.swing.JPanel {
     public PanGestionClientesAdministrador(ClientInstance clientInstance) {
         initComponents();
 		this.clientInstance = clientInstance;
+		populateTable();
     }
 
+	private void populateTable(){
+		// Clear the table before populating it
+		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblGestionClientes.getModel();
+		model.setRowCount(0); 
+		clientInstance.sendMessage("103");
+		String raw;
+		try {
+			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			raw = raw.substring(3);
+		} catch (InterruptedException e) {
+			raw = "|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|";
+		}
+		ArrayList<String> rows = RequestHandler.superArrayReconstructor(raw);
+		
+		for (String i : rows) {
+			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
+			if (row.size() == 5) {
+				if (!row.get(0).equals("No Asignado")) {
+					model = (javax.swing.table.DefaultTableModel) tblGestionClientes.getModel();
+					model.addRow(new Object[]{row.get(0), row.get(1), row.get(2), row.get(3), row.get(4)});
+				}
+				
+			} else {
+				System.out.println("Error: Row does not contain exactly 5 elements. "+
+						"Received: " + row.size() + " elements." + i);
+			}
+		}
+	}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -57,12 +90,7 @@ public class PanGestionClientesAdministrador extends javax.swing.JPanel {
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         tblGestionClientes.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
+            new Object [][] {},
             new String [] {
                 "DNI", "Nombre", "Direccion", "Telefono", "Sponsor"
             }
@@ -89,19 +117,36 @@ public class PanGestionClientesAdministrador extends javax.swing.JPanel {
         btnRegistrar.setBackground(new java.awt.Color(8, 156, 12));
         //btnRegistrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Registrar.png"))); // NOI18N
         btnRegistrar.setText("Registrar");
+		btnRegistrar.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btnRegistrarMouseClicked(evt);
+			}
+		});
 
         btnActualizar.setBackground(new java.awt.Color(8, 156, 12));
         //btnActualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Actualizar.png"))); // NOI18N
         btnActualizar.setText("Actualizar");
-
+		btnActualizar.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btnActualizarMouseClicked(evt);
+			}
+		});
         btnEliminar.setBackground(new java.awt.Color(8, 156, 12));
         //btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/elminar.png"))); // NOI18N
         btnEliminar.setText("Eliminar");
-
+		btnEliminar.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btnEliminarMouseClicked(evt);
+			}
+		});
         jButton4.setBackground(new java.awt.Color(8, 156, 12));
         //jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/nuevo.png"))); // NOI18N
         jButton4.setText("Nuevo");
-
+		jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				jButton4MouseClicked(evt);
+			}
+		});
         lblBuscarNombre.setText("Buscar por DNI");
 
         jLabel2.setText("Telefono");
@@ -223,6 +268,97 @@ public class PanGestionClientesAdministrador extends javax.swing.JPanel {
     private void txtDNIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDNIActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtDNIActionPerformed
+
+
+	private void btnRegistrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistrarMouseClicked	
+		String dni = txtDNI.getText();
+		String nombre = txtNombre.getText();
+		String direccion = txtDireccion.getText();
+		String telefono = txtTelefono.getText();
+		String sponsor = txtSponsor.getText();
+
+		if (dni.isEmpty() || nombre.isEmpty() || direccion.isEmpty() || telefono.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "All fields must be filled out.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: All fields must be filled out.");
+			return;
+		}
+
+		if (sponsor.isEmpty()) {
+			sponsor = "6"; // Default value if sponsor is not provided
+			System.out.println("Sponsor not provided, setting to 'N/A'.");
+		}
+
+
+		clientInstance.sendMessage("304 " + "|" + dni + "|" + nombre + "|" + direccion + "|" + telefono + "|" + sponsor);
+
+		String response;
+		try {
+			response = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			response ="801" + e.getMessage();
+		}
+		if (response.equals("800")) {
+			System.out.println("Client registered successfully.");
+			populateTable();
+		} else {
+			System.out.println("Error registering : " + response);
+		}
+	}//GEN-LAST:event_btnRegistrarMouseClicked
+
+	private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
+		populateTable();
+	}//GEN-LAST:event_jButton4MouseClicked
+
+	private void btnEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEliminarMouseClicked
+		String agencia = txtDNI.getText();
+
+		if (agencia.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "All fields must be filled out.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: All fields must be filled out.");
+			return;
+		}
+		clientInstance.sendMessage("404 |" + agencia+"|");
+
+		populateTable();
+	}
+
+	private void btnActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnActualizarMouseClicked
+		String dni = txtDNI.getText();
+		String nombre = txtNombre.getText();
+		String direccion = txtDireccion.getText();
+		String telefono = txtTelefono.getText();
+		String sponsor = txtSponsor.getText();
+
+		if (dni.isEmpty() || nombre.isEmpty() || direccion.isEmpty() || telefono.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "All fields must be filled out.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: All fields must be filled out.");
+			return;
+		}
+
+		if (sponsor.isEmpty()) {
+			sponsor = "6"; // Default value if sponsor is not provided
+			System.out.println("Sponsor not provided, setting to 'N/A'.");
+			clientInstance.sendMessage("311 "+ "|" + nombre + "|" + direccion + "|" + telefono + "|" + sponsor + "|" + dni );
+
+		}
+
+		else{
+			clientInstance.sendMessage("311 "+ "|" + nombre + "|" + direccion + "|" + telefono + "|" + sponsor + "|" + dni );
+
+		}
+		String response;
+		try {
+			response = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			response = "801" + e.getMessage();
+		}
+		if (response.equals("800")) {
+			System.out.println("Agency updated successfully.");
+			populateTable();
+		} else {
+			System.out.println("Error updating agency: " + response);
+		}
+	}//GEN-LAST:event_btnActualizarMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

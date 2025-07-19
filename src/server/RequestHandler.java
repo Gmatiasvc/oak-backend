@@ -158,7 +158,7 @@ public class RequestHandler {
 								+ "|" + sponsorNombre + "|%";
 					} else {
 						clientes += "|" + rs.getString("dni") + "|" + rs.getString("nombre")
-								+ "|" + rs.getString("direccion") + "|" + rs.getString("telefono") + "|%";
+								+ "|" + rs.getString("direccion") + "|" + rs.getString("telefono") + "|6|%";
 					}
 				}
 			} catch (SQLException e) {
@@ -529,6 +529,106 @@ public class RequestHandler {
         } 
 
 		
+		else if (code.equals("309")) {
+			ArrayList<String> agencias = arrayReconstructor(request.substring(4));
+			if (agencias.size() < 3) {
+				return "801 Not enough data";
+			}
+			String garaje_id = agencias.get(0);
+			String nombre = agencias.get(1);
+			String direccion = agencias.get(2);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("update Garaje set nombre=?, ubicacion=? where garaje_id=?")) {
+				stmt.setString(1, nombre);
+				stmt.setString(2, direccion);
+				stmt.setString(3, garaje_id);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+
+		
+		else if (code.equals("310")) {
+			ArrayList<String> agencias = arrayReconstructor(request.substring(4));
+			if (agencias.size() < 5) {
+				return "801 Not enough data";
+			}
+			String modelo = agencias.get(0);
+			String color = agencias.get(1);
+			String marca = agencias.get(2);
+			String estado = agencias.get(3);
+			String garaje_id = agencias.get(4);
+			
+			
+			String placa = agencias.get(5);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("update Automovil set modelo=?,color=?,marca=?,estado=?,garaje_id=? where placa=?")) {
+				stmt.setString(1, modelo);
+				stmt.setString(2, color);
+				stmt.setString(3, marca);
+				stmt.setString(4, estado);
+				String garajeId = "";
+				try (Statement stmt2 = conn.createStatement(); ResultSet rs = stmt2.executeQuery("SELECT garaje_id FROM Garaje WHERE nombre = '" + garaje_id + "'")) {
+					if (rs.next()) {
+						garajeId = rs.getString("garaje_id");
+					}
+				}
+				stmt.setString(5, garajeId);
+				stmt.setString(6, placa);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+
+		
+		else if (code.equals("311")) {
+			ArrayList<String> agencias = arrayReconstructor(request.substring(4));
+			if (agencias.size() < 5) {
+				return "801 Not enough data";
+			}
+			String nombre = agencias.get(0);
+			String direccion = agencias.get(1);
+			String telefono = agencias.get(2);
+			String sponsor_id = agencias.get(3);
+			String dni = agencias.get(4);
+			if (sponsor_id.equals("null")) {
+				sponsor_id = "6";
+			}
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("update Cliente set nombre=?,direccion=?,telefono=?,sponsor_id=? where dni=?")) {
+				stmt.setString(1, nombre);
+				stmt.setString(2, direccion);
+				stmt.setString(3, telefono);
+				stmt.setString(4, sponsor_id);
+				stmt.setString(5, dni);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					System.out.println(nombre + " " + direccion + " " + telefono + " " + sponsor_id + " " + dni);
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+
+
 		else if (code.equals("401")) {
 			ArrayList<String> datos = arrayReconstructor(request.substring(4));
 			if (datos.size() < 1) {
@@ -604,8 +704,8 @@ public class RequestHandler {
 				return "801 Not enough data";
 			}
 			String cliente_id = datos.get(0);
-			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("delete from Cliente where cliente_id=?")) {
-			
+			System.out.println("Cliente ID: " + cliente_id);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("delete from Cliente where dni=?")) {
 				stmt.setString(1, cliente_id);
 				int rowsAffected = stmt.executeUpdate();
 				if (rowsAffected > 0) {

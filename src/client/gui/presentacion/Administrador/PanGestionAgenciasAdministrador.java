@@ -48,10 +48,7 @@ public class PanGestionAgenciasAdministrador extends javax.swing.JPanel {
 				System.out.println("Error: Row does not contain exactly 3 elements. "+
 						"Received: " + row.size() + " elements." + i);
 			}
-
 		}
-
-
 	}
 
     /**
@@ -275,6 +272,8 @@ public class PanGestionAgenciasAdministrador extends javax.swing.JPanel {
 			return;
 		}
 		clientInstance.sendMessage("401 |" + agencia+"|");
+		populateTable();
+
 	}
 
 	private void btnActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnActualizarMouseClicked
