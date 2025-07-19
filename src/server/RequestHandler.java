@@ -109,9 +109,9 @@ public class RequestHandler {
 		
 		else if (code.equals("101")) {
             String agencias = "201 ";
-            try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT nombre,direccion FROM Agencia")) {
+            try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT agencia_id, nombre,direccion FROM Agencia")) {
                 while (rs.next()) {
-                    agencias = agencias + "Nombre: " + rs.getString("nombre") + ", Dirección: " + rs.getString("direccion") + "|";
+                    agencias = agencias + "|" +rs.getString("agencia_id")+ "|" + rs.getString("nombre") + "|" + rs.getString("direccion") + "|%";
                 }
             } catch (SQLException e) {
                 return "900 " + e.getMessage();
@@ -123,17 +123,17 @@ public class RequestHandler {
 		
 		
 		else if (code.equals("102")) {
-			String dnis = "202 ";
-			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT dni FROM Cliente")) {
+			String garajes = "202 ";
+			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT garaje_id, nombre, ubicacion FROM Garaje")) {
 				while (rs.next()) {
-					dnis = dnis + rs.getString("dni")+"|";
+					garajes = garajes+"|" + rs.getString("garaje_id")+"|"+rs.getString("nombre")+"|"+rs.getString("ubicacion")+"|%";
 				}
             } catch (SQLException e) {
                 return "900 " + e.getMessage();
             } catch (ClassNotFoundException e) {
                 return "901 " + e.getMessage();
             }
-			return dnis;
+			return garajes;
         } 
 
 		
@@ -142,8 +142,8 @@ public class RequestHandler {
 			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Cliente")) {
 				while (rs.next()) {
 					if (rs.getString("sponsor_id") != null) {
-						String sponsorNombre = "";
-						try (Connection conn2 = DBConnection.realizarConexion(); Statement stmt2 = conn2.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Cliente where sponsor_id = '" + rs.getString("sponsor_id") + "'")) {
+						String sponsorNombre = "Sin Sponsor";
+						try (Connection conn2 = DBConnection.realizarConexion(); Statement stmt2 = conn2.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Cliente where cliente_id = '" + rs.getString("sponsor_id") + "'")) {
 							while (rs2.next()) {
 								sponsorNombre = rs2.getString("nombre");
 							}
@@ -153,12 +153,12 @@ public class RequestHandler {
 							return "901 " + e.getMessage();
 						}
 	
-						clientes += "DNI: " + rs.getString("dni") + ", Nombre: " + rs.getString("nombre")
-								+ ", Dirección: " + rs.getString("direccion") + ", Teléfono: " + rs.getString("telefono")
-								+ ", Sponsor: " + sponsorNombre + "|";
+						clientes += "|" + rs.getString("dni") + "|" + rs.getString("nombre")
+								+ "|" + rs.getString("direccion") + "|" + rs.getString("telefono")
+								+ "|" + sponsorNombre + "|%";
 					} else {
-						clientes += "DNI: " + rs.getString("dni") + ", Nombre: " + rs.getString("nombre")
-								+ ", Dirección: " + rs.getString("direccion") + ", Teléfono: " + rs.getString("telefono") + "|";
+						clientes += "|" + rs.getString("dni") + "|" + rs.getString("nombre")
+								+ "|" + rs.getString("direccion") + "|" + rs.getString("telefono") + "|%";
 					}
 				}
 			} catch (SQLException e) {
@@ -181,9 +181,9 @@ public class RequestHandler {
 						}
 					}
 	
-					automoviles += "Placa: " + rs.getString("placa") + ", Modelo: " + rs.getString("modelo")
-							+ ", Color: " + rs.getString("color") + ", Marca: " + rs.getString("marca")
-							+ ", Garaje: " + garajeNombre + "|";
+					automoviles += "|" + rs.getString("placa") + "|" + rs.getString("modelo")
+							+ "|" + rs.getString("color") + "|" + rs.getString("marca") + "|" + rs.getString("estado")
+							+ "|" + garajeNombre + "|%";
 				}
 			} catch (SQLException e) {
 				return "900 " + e.getMessage();
@@ -193,43 +193,35 @@ public class RequestHandler {
 			return automoviles;
         } 
 		
-
-		else if (code.equals("105")) {
-			String nombresGarajes = "205 ";
-			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT nombre FROM Garaje")) {
-				while (rs.next()) {
-					nombresGarajes = nombresGarajes + rs.getString("nombre") + "|";
-				}
-			} catch (SQLException e) {
-				return "900 " + e.getMessage();
-			} catch (ClassNotFoundException e) {
-				return "901 " + e.getMessage();
-			}
-			return nombresGarajes;
-        } 
 		
-
-		else if (code.equals("106")) {
-			String reservas = "206 ";
+		else if (code.equals("105")) {
+			String reservas = "205 ";
 			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Reserva")) {
+				
 				while (rs.next()) {
-					String clienteNombre = "";
+					String clienteNombre = "No Asignado";
 					try (Statement stmt2 = conn.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Cliente WHERE cliente_id = '" + rs.getString("cliente_id") + "'")) {
 						if (rs2.next()) {
 							clienteNombre = rs2.getString("nombre");
 						}
 					}
 	
-					String agenciaNombre = "";
+					String agenciaNombre = "No Asignada";
 					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT nombre FROM Agencia WHERE agencia_id = '" + rs.getString("agencia_id") + "'")) {
 						if (rs3.next()) {
 							agenciaNombre = rs3.getString("nombre");
 						}
 					}
-	
-					reservas += "Cliente: " + clienteNombre + ", Agencia: " + agenciaNombre
-							+ ", Fecha Inicio: " + rs.getTimestamp("fecha_inicio") + ", Fecha Fin: " + rs.getTimestamp("fecha_fin")
-							+ ", Precio Total: " + rs.getString("precio_total") + ", Entregado: " + (rs.getInt("entregado") == 1 ? "Sí" : "No");
+
+					String placas = "No Asignado";
+					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
+						if (rs3.next()) {
+							agenciaNombre = rs3.getString("nombre");
+						}
+					}
+					
+					reservas += "|" + rs.getString("reserva_id")+ "|"+placas+ "|"+ clienteNombre + "|"+ agenciaNombre + "|"+ rs.getTimestamp("fecha_inicio") + "|"+ rs.getTimestamp("fecha_fin") + "|"+ rs.getString("precio_total") + "|"+ (rs.getInt("entregado") == 1 ? "Sí" : "No")+ "|"+(rs.getInt("entregado") == 1 ? "Sí" : "No")+ "|%";
+
 					try (Statement stmt4 = conn.createStatement(); ResultSet rs4 = stmt4.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
 						if (rs4.next()) {
 							reservas += ", Placa: " + rs4.getString("placa");
@@ -248,49 +240,7 @@ public class RequestHandler {
         } 
 		
 		
-		else if (code.equals("107")) {
-			String nombresAgencias = "207 ";
-			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT nombre FROM Agencia")) {
-				while (rs.next()) {
-					nombresAgencias = nombresAgencias + rs.getString("nombre") + "|";
-				}
-			} catch (SQLException e) {
-				return "900 " + e.getMessage();
-			} catch (ClassNotFoundException e) {
-				return "901 " + e.getMessage();
-			}
-			return nombresAgencias;        
-		} 
 		
-		
-		else if (code.equals("108")) {
-			String placas = "208 ";
-			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT placa FROM Automovil")) {
-				while (rs.next()) {
-					placas = placas + rs.getString("placa") + "|";
-				}
-			} catch (SQLException e) {
-				return "900 " + e.getMessage();
-			} catch (ClassNotFoundException e) {
-				return "901 " + e.getMessage();
-			}
-			return placas;
-        } 
-		
-		
-		else if (code.equals("109")) {
-			String ids = "209 ";
-			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT reserva_id FROM Reserva")) {
-				while (rs.next()) {
-					ids = ids + rs.getString("reserva_id") + "|";
-				}
-			} catch (SQLException e) {
-				return "900 " + e.getMessage();
-			} catch (ClassNotFoundException e) {
-				return "901 " + e.getMessage();
-			}
-			return ids;
-        } 
 		
 		
 		else if (code.equals("301")) {
@@ -552,7 +502,123 @@ public class RequestHandler {
 			}
 	
         } 
+
+		else if (code.equals("308")) {
+			ArrayList<String> agencias = arrayReconstructor(request.substring(4));
+			if (agencias.size() < 3) {
+				return "801 Not enough data";
+			}
+			String agencia_id = agencias.get(0);
+			String nombre = agencias.get(1);
+			String direccion = agencias.get(2);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("update Agencia set nombre=?, direccion=? where agencia_id=?")) {
+				stmt.setString(1, nombre);
+				stmt.setString(2, direccion);
+				stmt.setString(3, agencia_id);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+
 		
+		else if (code.equals("401")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 1) {
+				return "801 Not enough data";
+			}
+			String agencia_id = datos.get(0);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("delete from Agencia where agencia_id=?")) {
+			
+				stmt.setString(1, agencia_id);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+
+		
+		else if (code.equals("402")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 1) {
+				return "801 Not enough data";
+			}
+			String garaje_id = datos.get(0);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("delete from Garaje where garaje_id=?")) {
+			
+				stmt.setString(1, garaje_id);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+
+		
+		else if (code.equals("403")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 1) {
+				return "801 Not enough data";
+			}
+			String placa = datos.get(0);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("delete from Automovil where placa=?")) {
+			
+				stmt.setString(1, placa);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+		
+
+		else if (code.equals("404")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 1) {
+				return "801 Not enough data";
+			}
+			String cliente_id = datos.get(0);
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("delete from Cliente where cliente_id=?")) {
+			
+				stmt.setString(1, cliente_id);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
 		
 		else {
             return "What? Didn't understand that";
