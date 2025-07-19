@@ -1,4 +1,4 @@
-package server;
+package share;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +13,8 @@ public class VanityConsole {
 	private static final String COLOR_BLUE = "\u001B[34m"; // Blue color
 	private static final String COLOR_PURPLE = "\u001B[35m"; // Purple color
 	private static final String COLOR_BOLD = "\u001B[1m"; // Bold text
+
+	public static final String TERMINAL = "\u001B[36m $ \u001B[0m"; // Cyan color
 
     // Format for logging timestamps
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");

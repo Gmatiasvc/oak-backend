@@ -2,7 +2,7 @@ package test;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import server.VanityConsole;
+import share.VanityConsole;
 
 public class TestMain {
 	

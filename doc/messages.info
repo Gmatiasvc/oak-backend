@@ -22,15 +22,29 @@ VALID CODES:
 069: Funny
 
   1XX: Fetch info.
-*101 -> Lista todas las agencias de la tabla Agencia
-*102 -> Lista los dnis de los clientes de la tabla Cliente
-*103 -> Lista los clientes de la Tabla Cliente
+*101 -> Lista todas las agencias de la tabla Agencia 
+		* ID | Nombre | Direccion
+
+! DEPRECATE *102 -> Lista los dnis de los clientes de la tabla Cliente 
+
+* 102 -> Lista todos los garajes
+		* ID | Nombre | Ubicación
+
+
+*103 -> Lista los clientes
+		* DNI | Nombre | Direccion | Telefono | Sponsor (?)
+
 *104 -> Lista los automoviles de la tabla Automovil
-*105 -> Lista los nombres de los garajes de la tabla Garaje
+		* Placa | Modelo | Color | Marca | Estado | Garaje
+
+! DEPRECATE  *105 -> Lista los nombres de los garajes de la tabla Garaje
+
 *106 -> Lista las reservas de la tabla Reserva
-*107 -> Lista los nombres de las agencias
-*108 -> Lista las placas de los automoviles
-*109 -> Lista las ids de las reservas de la tabla Reserva
+		* Reserva | Automoviles | Cliente | Agencia | Fecha inicio | Fecha fin | Precio total | Entregado
+
+! DEPRECATE *107 -> Lista los nombres de las agencias
+! DEPRECATE *108 -> Lista las placas de los automoviles
+! DEPRECATE *109 -> Lista las ids de las reservas de la tabla Reserva
 
 111 (..) 199 -> Reservado
 

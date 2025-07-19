@@ -39,6 +39,37 @@ public class RequestHandler {
 		}
 		return sb.toString();
 	}
+	
+	public static ArrayList<String> superArrayReconstructor(String str){
+		ArrayList<String> array = new ArrayList<>();
+
+		if (str == null || str.isEmpty()) {
+			return array; 
+		}
+		String[] parts = str.split("\\%"); 
+		
+		for (String part : parts) {
+			if (!part.isEmpty()) { 
+				array.add(part.trim()); 
+			}
+		}
+
+		return array;
+	}
+	
+	public static String superArrayDeconstructor(ArrayList<String> array) {
+		if (array == null || array.isEmpty()) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		for (String item : array) {
+			if (sb.length() > 0) {
+				sb.append("&");
+			}
+			sb.append(item.trim());
+		}
+		return sb.toString();
+	}
 
 
     private String trimCode(String request) {
@@ -80,7 +111,7 @@ public class RequestHandler {
             String agencias = "201 ";
             try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT nombre,direccion FROM Agencia")) {
                 while (rs.next()) {
-                    agencias = agencias + "Nombre: " + rs.getString("nombre") + ", Dirección: " + rs.getString("direccion") + "\n";
+                    agencias = agencias + "Nombre: " + rs.getString("nombre") + ", Dirección: " + rs.getString("direccion") + "|";
                 }
             } catch (SQLException e) {
                 return "900 " + e.getMessage();
@@ -124,10 +155,10 @@ public class RequestHandler {
 	
 						clientes += "DNI: " + rs.getString("dni") + ", Nombre: " + rs.getString("nombre")
 								+ ", Dirección: " + rs.getString("direccion") + ", Teléfono: " + rs.getString("telefono")
-								+ ", Sponsor: " + sponsorNombre + "\n";
+								+ ", Sponsor: " + sponsorNombre + "|";
 					} else {
 						clientes += "DNI: " + rs.getString("dni") + ", Nombre: " + rs.getString("nombre")
-								+ ", Dirección: " + rs.getString("direccion") + ", Teléfono: " + rs.getString("telefono") + "\n";
+								+ ", Dirección: " + rs.getString("direccion") + ", Teléfono: " + rs.getString("telefono") + "|";
 					}
 				}
 			} catch (SQLException e) {
@@ -152,7 +183,7 @@ public class RequestHandler {
 	
 					automoviles += "Placa: " + rs.getString("placa") + ", Modelo: " + rs.getString("modelo")
 							+ ", Color: " + rs.getString("color") + ", Marca: " + rs.getString("marca")
-							+ ", Garaje: " + garajeNombre + "\n";
+							+ ", Garaje: " + garajeNombre + "|";
 				}
 			} catch (SQLException e) {
 				return "900 " + e.getMessage();
@@ -206,7 +237,7 @@ public class RequestHandler {
 					} catch (SQLException e) {
 						return "900 " + e.getMessage();
 					}
-					reservas += "\n";
+					reservas += "|";
 				}
 			} catch (SQLException e) {
 				return "900 " + e.getMessage();
