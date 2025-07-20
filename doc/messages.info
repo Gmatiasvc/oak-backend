@@ -37,6 +37,18 @@ VALID CODES:
 *105 -> Lista las reservas de la tabla Reserva
 		* Reserva | Automoviles | Cliente | Agencia | Fecha inicio | Fecha fin | Precio total | Entregado
 
+*106 -> Busca Agencia por Nombre
+*107 -> Busca Agencia por Direccion
+*108 -> Busca Garaje por Nombre
+*109 -> Busca Garaje por Ubicación
+*110 -> Busca Automovil por Placa
+*111 -> Busca Automovil por Marca
+*112 -> Busca Cliente por DNI
+*113 -> Busca Cliente por Sponsor
+*114 -> Busca Reserva por Cliente
+*115 -> Busca Reserva por Fecha
+*116 -> Busca Reserva por Agencia
+
 111 (..) 199 -> Reservado
 
 *301 -> Añade una agencia a la tabla Agencia

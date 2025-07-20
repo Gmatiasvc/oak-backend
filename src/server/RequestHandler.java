@@ -440,10 +440,216 @@ public class RequestHandler {
 			return clientes;
         } 
 		
+		
+		else if (code.equals("114")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+
+			if (data.size() < 1) {
+				return "801 Not enough data";
+			}
+			String DNI = data.get(0);
+
+			if (DNI == null || DNI.isEmpty()) {
+				return "801 Not enough data";
+			}
+			String reservas = "214 ";
+
+			try (Connection conn = DBConnection.realizarConexion()) {
+				PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Reserva WHERE cliente_id = ?");
+
+				try(Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT cliente_id FROM Cliente WHERE dni = '" + DNI + "'")) {
+					if (rs.next()) {
+						pstmt.setString(1, rs.getString("cliente_id"));
+					} else {
+						return "801 Cliente not found";
+					}
+				} catch (SQLException e) {
+					return "900 " + e.getMessage();
+				} 
+
+				ResultSet rs = pstmt.executeQuery();
+				while (rs.next()) {
+					String clienteNombre = "No Asignado Nombre";
+					try (Statement stmt2 = conn.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Cliente WHERE cliente_id = '" + rs.getString("cliente_id") + "'")) {
+						if (rs2.next()) {
+							clienteNombre = rs2.getString("nombre");
+						}
+					}
+	
+					String agenciaNombre = "No Asignada Agencia";
+					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT nombre FROM Agencia WHERE agencia_id = '" + rs.getString("agencia_id") + "'")) {
+						if (rs3.next()) {
+							agenciaNombre = rs3.getString("nombre");
+						}
+					}
+
+					String placas = "No Asignado Placas";
+					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
+						if (rs3.next()) {
+							agenciaNombre = rs3.getString("nombre");
+						}
+					}
+					
+					reservas += "|" + rs.getString("reserva_id")+ "|"+placas+ "|"+ clienteNombre + "|"+ agenciaNombre + "|"+ rs.getTimestamp("fecha_inicio") + "|"+ rs.getTimestamp("fecha_fin") + "|"+ rs.getString("precio_total") + "|"+ (rs.getInt("entregado") == 1 ? "Sí" : "No")+ "|%";
+
+					try (Statement stmt4 = conn.createStatement(); ResultSet rs4 = stmt4.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
+						if (rs4.next()) {
+							reservas += ", Placa: " + rs4.getString("placa");
+						}
+					} catch (SQLException e) {
+						return "900 " + e.getMessage();
+					}
+					reservas += "|";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+			return reservas;
+        } 
 
 
+		
+		else if (code.equals("115")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+
+			if (data.size() < 1) {
+				return "801 Not enough data";
+			}
+			String Fecha = data.get(0);
+
+			if (Fecha == null || Fecha.isEmpty()) {
+				return "801 Not enough data";
+			}
+			String reservas = "215 ";
+
+			try (Connection conn = DBConnection.realizarConexion()) {
+				PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Reserva WHERE fecha_inicio = ?");
 
 
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date fechaInicioDate;
+
+				try {
+					fechaInicioDate = new java.sql.Date(dateFormat.parse(Fecha).getTime());
+				} catch (ParseException e) {
+					return "902 " + e.getMessage();
+				}
+		
+				pstmt.setTimestamp(1, new Timestamp(fechaInicioDate.getTime()));
+
+				ResultSet rs = pstmt.executeQuery();
+				while (rs.next()) {
+					String clienteNombre = "No Asignado Nombre";
+					try (Statement stmt2 = conn.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Cliente WHERE cliente_id = '" + rs.getString("cliente_id") + "'")) {
+						if (rs2.next()) {
+							clienteNombre = rs2.getString("nombre");
+						}
+					}
+	
+					String agenciaNombre = "No Asignada Agencia";
+					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT nombre FROM Agencia WHERE agencia_id = '" + rs.getString("agencia_id") + "'")) {
+						if (rs3.next()) {
+							agenciaNombre = rs3.getString("nombre");
+						}
+					}
+
+					String placas = "No Asignado Placas";
+					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
+						if (rs3.next()) {
+							agenciaNombre = rs3.getString("nombre");
+						}
+					}
+					
+					reservas += "|" + rs.getString("reserva_id")+ "|"+placas+ "|"+ clienteNombre + "|"+ agenciaNombre + "|"+ rs.getTimestamp("fecha_inicio") + "|"+ rs.getTimestamp("fecha_fin") + "|"+ rs.getString("precio_total") + "|"+ (rs.getInt("entregado") == 1 ? "Sí" : "No")+ "|%";
+
+					try (Statement stmt4 = conn.createStatement(); ResultSet rs4 = stmt4.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
+						if (rs4.next()) {
+							reservas += ", Placa: " + rs4.getString("placa");
+						}
+					} catch (SQLException e) {
+						return "900 " + e.getMessage();
+					}
+					reservas += "|";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+			return reservas;
+        } 
+
+		
+		
+		else if (code.equals("116")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+
+			if (data.size() < 1) {
+				return "801 Not enough data";
+			}
+			String Agencia = data.get(0);
+
+			if (Agencia == null || Agencia.isEmpty()) {
+				return "801 Not enough data";
+			}
+			String reservas = "216 ";
+
+			try (Connection conn = DBConnection.realizarConexion()) {
+				PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Reserva WHERE agencia_id = ?");
+
+				try(Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT agencia_id FROM Agencia WHERE nombre = '" + Agencia + "'")) {
+					if (rs.next()) {
+						pstmt.setString(1, rs.getString("agencia_id"));
+					} else {
+						return "801 Cliente not found";
+					}
+				} catch (SQLException e) {
+					return "900 " + e.getMessage();
+				} 
+
+				ResultSet rs = pstmt.executeQuery();
+				while (rs.next()) {
+					String clienteNombre = "No Asignado Nombre";
+					try (Statement stmt2 = conn.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Cliente WHERE cliente_id = '" + rs.getString("cliente_id") + "'")) {
+						if (rs2.next()) {
+							clienteNombre = rs2.getString("nombre");
+						}
+					}
+	
+					String agenciaNombre = "No Asignada Agencia";
+					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT nombre FROM Agencia WHERE agencia_id = '" + rs.getString("agencia_id") + "'")) {
+						if (rs3.next()) {
+							agenciaNombre = rs3.getString("nombre");
+						}
+					}
+
+					String placas = "No Asignado Placas";
+					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
+						if (rs3.next()) {
+							agenciaNombre = rs3.getString("nombre");
+						}
+					}
+					
+					reservas += "|" + rs.getString("reserva_id")+ "|"+placas+ "|"+ clienteNombre + "|"+ agenciaNombre + "|"+ rs.getTimestamp("fecha_inicio") + "|"+ rs.getTimestamp("fecha_fin") + "|"+ rs.getString("precio_total") + "|"+ (rs.getInt("entregado") == 1 ? "Sí" : "No")+ "|%";
+
+					try (Statement stmt4 = conn.createStatement(); ResultSet rs4 = stmt4.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
+						if (rs4.next()) {
+							reservas += ", Placa: " + rs4.getString("placa");
+						}
+					} catch (SQLException e) {
+						return "900 " + e.getMessage();
+					}
+					reservas += "|";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+			return reservas;
+        } 
 
 
 

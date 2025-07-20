@@ -69,7 +69,7 @@ public class PanGestionReservasAdministrador extends javax.swing.JPanel {
 			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
 			if (row.size() == 8) {
 				model = (javax.swing.table.DefaultTableModel) tblGestionReservas.getModel();
-				model.addRow(new Object[]{row.get(0), row.get(1), row.get(2)});
+				model.addRow(new Object[]{row.get(0), row.get(1), row.get(2), row.get(3), row.get(4), row.get(5), row.get(6), row.get(7)});
 			} else {
 				System.out.println("Error: Row does not contain exactly 8 elements. "+
 						"Received: " + row.size() + " elements." + i);
@@ -402,15 +402,30 @@ public class PanGestionReservasAdministrador extends javax.swing.JPanel {
 	}//GEN-LAST:event_btnActualizarActionPerformed
 
 	private void btnConsultarNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarNombreActionPerformed
-		
+		String nombre = txtBuscarCliente.getText();
+		if (nombre.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Por favor, ingrese un nombre para buscar.");
+			return;
+		}
+		populateTableWithData("114 "+ nombre);
 	}//GEN-LAST:event_btnConsultarNombreActionPerformed
 
 	private void btnConsultarAgenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarAgenciaActionPerformed
-
+		String agencia = txtBuscarAgencia.getText();
+		if (agencia.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Por favor, ingrese una agencia para buscar.");
+			return;
+		}
+		populateTableWithData("116 "+ agencia);
 	}//GEN-LAST:event_btnConsultarAgenciaActionPerformed
 
 	private void btnBuscarFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarFechaActionPerformed
-
+		String fecha = txtBuscarReserva.getText();
+		if (fecha.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Por favor, ingrese una fecha para buscar.");
+			return;
+		}
+		populateTableWithData("115 "+ fecha);
 	}//GEN-LAST:event_btnBuscarFechaActionPerformed
 
 	private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed

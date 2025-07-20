@@ -6,6 +6,9 @@ package client.gui.presentacion.Empleado;
 
 
 import client.ClientInstance;
+import client.RequestHandler;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -20,7 +23,62 @@ public class PanGestionReservaEmpleado extends javax.swing.JPanel {
     public PanGestionReservaEmpleado(ClientInstance clientInstance) {
 		this.clientInstance = clientInstance;
         initComponents();
+		populateTable();
     }
+
+	private void populateTable(){
+		// Clear the table before populating it
+		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblGestionReservas.getModel();
+		model.setRowCount(0); 
+		clientInstance.sendMessage("105");
+		String raw;
+		try {
+			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			raw = raw.substring(3);
+		} catch (InterruptedException e) {
+			raw = "|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|";
+		}
+		ArrayList<String> rows = RequestHandler.superArrayReconstructor(raw);
+		
+		for (String i : rows) {
+			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
+			if (row.size() == 8) {
+				model = (javax.swing.table.DefaultTableModel) tblGestionReservas.getModel();
+				model.addRow(new Object[]{row.get(0), row.get(1), row.get(2), row.get(3), row.get(4), row.get(5), row.get(6), row.get(7)});
+			} else {
+				System.out.println("Error: Row does not contain exactly 8 elements. "+
+						"Received: " + row.size() + " elements." + i);
+			}
+		}
+	}
+
+	private void populateTableWithData(String msg){
+		// Clear the table before populating it
+		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblGestionReservas.getModel();
+		model.setRowCount(0); 
+		clientInstance.sendMessage(msg);
+		String raw;
+		try {
+			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			raw = raw.substring(3);
+		} catch (InterruptedException e) {
+			raw = "|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|";
+		}
+		ArrayList<String> rows = RequestHandler.superArrayReconstructor(raw);
+		
+		for (String i : rows) {
+			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
+			if (row.size() == 8) {
+				model = (javax.swing.table.DefaultTableModel) tblGestionReservas.getModel();
+				model.addRow(new Object[]{row.get(0), row.get(1), row.get(2), row.get(3), row.get(4), row.get(5), row.get(6), row.get(7)});
+			} else {
+				System.out.println("Error: Row does not contain exactly 8 elements. "+
+						"Received: " + row.size() + " elements." + i);
+			}
+		}
+	}
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -112,15 +170,29 @@ public class PanGestionReservaEmpleado extends javax.swing.JPanel {
         btnEliminar.setBackground(new java.awt.Color(8, 156, 12));
         //btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/elminar.png"))); // NOI18N
         btnEliminar.setText("Eliminar");
-
+		btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btnEliminarActionPerformed(evt);
+			}
+		});
         lblBuscarCliente.setText("Buscar por cliente");
 
         btnConsultarAgencia.setBackground(new java.awt.Color(8, 156, 12));
         //btnConsultarAgencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
-
+		btnConsultarAgencia.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btnConsultarAgenciaActionPerformed(evt);
+			}
+		});
+		
         btnNuevo.setBackground(new java.awt.Color(8, 156, 12));
         //btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/nuevo.png"))); // NOI18N
-        btnNuevo.setText("Nuevo");
+        btnNuevo.setText("Refrescar");
+		btnNuevo.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btnNuevoActionPerformed(evt);
+			}
+		});
 
         lblCodigo.setText("Codigo");
 
@@ -147,7 +219,11 @@ public class PanGestionReservaEmpleado extends javax.swing.JPanel {
 
         btnBuscarFecha.setBackground(new java.awt.Color(8, 156, 12));
         //btnBuscarFecha.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
-
+		btnBuscarFecha.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btnBuscarFechaActionPerformed(evt);
+			}
+		});
         txtCodigo.setToolTipText("");
         txtCodigo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -158,6 +234,11 @@ public class PanGestionReservaEmpleado extends javax.swing.JPanel {
         btnConsultarNombre.setBackground(new java.awt.Color(8, 156, 12));
         //btnConsultarNombre.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
         btnConsultarNombre.setToolTipText("");
+		btnConsultarNombre.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btnConsultarNombreActionPerformed(evt);
+			}
+		});
 
         txtDniCliente.setToolTipText("");
 
@@ -296,14 +377,7 @@ public class PanGestionReservaEmpleado extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnRegistrarActionPerformed
-
-    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnActualizarActionPerformed
-
+    
     private void CbxEntregaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CbxEntregaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_CbxEntregaActionPerformed
@@ -316,6 +390,82 @@ public class PanGestionReservaEmpleado extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCodigoActionPerformed
 
+    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+		String cliente_dni = txtDniCliente.getText();
+		String agencia_id = txtAgencia.getText();
+		String fecha_inicio = txtFechaInicio.getText();
+		String fecha_fin = txtFechaFin.getText();
+		String precio_total = txtPrecioTotal.getText();
+		String entregado = (CbxEntrega.isSelected()) ? "Si" : "No";
+
+		if (cliente_dni.isEmpty() || agencia_id.isEmpty() || fecha_inicio.isEmpty() || fecha_fin.isEmpty() || precio_total.isEmpty() || entregado.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Por favor, complete todos los campos antes de registrar.");
+		}
+		clientInstance.sendMessage("306 |" + cliente_dni + "|" + agencia_id + "|" + fecha_inicio + "|" + fecha_fin + "|" + precio_total + "|" + entregado);
+    }//GEN-LAST:event_btnRegistrarActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+		String reserva_id = txtCodigo.getText();
+		String cliente_dni = txtDniCliente.getText();
+		String agencia_id = txtAgencia.getText();
+		String fecha_inicio = txtFechaInicio.getText();
+		String fecha_fin = txtFechaFin.getText();
+		String precio_total = txtPrecioTotal.getText();
+		String entregado = (CbxEntrega.isSelected()) ? "Si" : "No";
+		if (reserva_id.isEmpty() || cliente_dni.isEmpty() || agencia_id.isEmpty() || fecha_inicio.isEmpty() || fecha_fin.isEmpty() || precio_total.isEmpty() || entregado.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Por favor, complete todos los campos antes de actualizar.");
+		
+		}
+
+		clientInstance.sendMessage("312 |" + cliente_dni + "|" + agencia_id + "|" + fecha_inicio + "|" + fecha_fin + "|" + precio_total + "|" + entregado + "|"  + reserva_id + "|" );
+		System.out.println("312 |" + cliente_dni + "|" + agencia_id + "|" + fecha_inicio + "|" + fecha_fin + "|" + precio_total + "|" + entregado + "|"  + reserva_id + "|");
+
+		populateTable();
+		populateTable();
+	}//GEN-LAST:event_btnActualizarActionPerformed
+
+	private void btnConsultarNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarNombreActionPerformed
+		String nombre = txtBuscarCliente.getText();
+		if (nombre.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Por favor, ingrese un nombre para buscar.");
+			return;
+		}
+		populateTableWithData("114 "+ nombre);
+	}//GEN-LAST:event_btnConsultarNombreActionPerformed
+
+	private void btnConsultarAgenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarAgenciaActionPerformed
+		String agencia = txtBuscarAgencia.getText();
+		if (agencia.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Por favor, ingrese una agencia para buscar.");
+			return;
+		}
+		populateTableWithData("116 "+ agencia);
+	}//GEN-LAST:event_btnConsultarAgenciaActionPerformed
+
+	private void btnBuscarFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarFechaActionPerformed
+		String fecha = txtBuscarReserva.getText();
+		if (fecha.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Por favor, ingrese una fecha para buscar.");
+			return;
+		}
+		populateTableWithData("115 "+ fecha);
+	}//GEN-LAST:event_btnBuscarFechaActionPerformed
+
+	private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
+		populateTable();
+	}//GEN-LAST:event_btnNuevoActionPerformed
+
+	private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+		String reserva_id = txtCodigo.getText();
+		if (reserva_id.isEmpty()) {
+			System.out.println("Error: Reserva ID is empty.");
+			return;
+		}
+		clientInstance.sendMessage("405 |" + reserva_id);
+
+		populateTable();
+		populateTable();
+	}//GEN-LAST:event_btnEliminarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox CbxEntrega;
