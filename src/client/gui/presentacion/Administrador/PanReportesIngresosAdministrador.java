@@ -5,6 +5,9 @@
 package client.gui.presentacion.Administrador;
 
 import client.ClientInstance;
+import client.RequestHandler;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -20,6 +23,60 @@ public class PanReportesIngresosAdministrador extends javax.swing.JPanel {
         initComponents();
 		this.clientInstance = clientInstance;
     }
+
+	private void populateTableMonthWithData(String msg){
+		// Clear the table before populating it
+		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblReporteMes.getModel();
+		model.setRowCount(0); 
+		clientInstance.sendMessage(msg);
+		String raw;
+		try {
+			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			raw = raw.substring(3);
+		} catch (InterruptedException e) {
+			raw = "|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|";
+		}
+		ArrayList<String> rows = RequestHandler.superArrayReconstructor(raw);
+		
+		for (String i : rows) {
+			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
+			if (row.size() == 2) {
+				model = (javax.swing.table.DefaultTableModel) tblReporteMes.getModel();
+				model.addRow(new Object[]{row.get(0), row.get(1)});
+			} else {
+				System.out.println("Error: Row does not contain exactly 8 elements. "+
+						"Received: " + row.size() + " elements." + i);
+			}
+		}
+	}
+
+	private void populateTableAgencyWithData(String msg){
+		// Clear the table before populating it
+		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblReporteAgencia.getModel();
+		model.setRowCount(0); 
+		clientInstance.sendMessage(msg);
+		String raw;
+		try {
+			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			raw = raw.substring(3);
+		} catch (InterruptedException e) {
+			raw = "|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|";
+		}
+		ArrayList<String> rows = RequestHandler.superArrayReconstructor(raw);
+		
+		for (String i : rows) {
+			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
+			if (row.size() == 2) {
+				model = (javax.swing.table.DefaultTableModel) tblReporteAgencia.getModel();
+				model.addRow(new Object[]{row.get(0), row.get(1)});
+			} else {
+				System.out.println("Error: Row does not contain exactly 8 elements. "+
+						"Received: " + row.size() + " elements." + i);
+			}
+		}
+	}
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -68,12 +125,23 @@ public class PanReportesIngresosAdministrador extends javax.swing.JPanel {
 
         btnDescargarReporteAgencia.setBackground(new java.awt.Color(8, 156, 12));
         //btnDescargarReporteAgencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/descarga.png"))); // NOI18N
-        btnDescargarReporteAgencia.setText("Descargar reporte agencia");
+        btnDescargarReporteAgencia.setText("Generar reporte agencia");
+		btnDescargarReporteAgencia.setToolTipText("");
+		btnDescargarReporteAgencia.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btnDescargarReporteAgenciaActionPerformed(evt);
+			}
+		});
 
         btnDescargarReporteMes.setBackground(new java.awt.Color(8, 156, 12));
         //btnDescargarReporteMes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/descarga.png"))); // NOI18N
-        btnDescargarReporteMes.setText("Descargar reporte mes");
+        btnDescargarReporteMes.setText("Generar reporte mes");
         btnDescargarReporteMes.setToolTipText("");
+		btnDescargarReporteMes.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btnDescargarReporteMesActionPerformed(evt);
+			}
+		});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -106,6 +174,16 @@ public class PanReportesIngresosAdministrador extends javax.swing.JPanel {
                 .addContainerGap(141, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+	private void btnDescargarReporteMesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDescargarReporteMesActionPerformed
+		
+		populateTableMonthWithData("501");
+	}//GEN-LAST:event_btnDescargarReporteMesActionPerformed
+
+	private void btnDescargarReporteAgenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDescargarReporteAgenciaActionPerformed
+		
+		populateTableAgencyWithData("502");
+	}//GEN-LAST:event_btnDescargarReporteAgenciaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

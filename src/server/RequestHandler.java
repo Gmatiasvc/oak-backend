@@ -5,6 +5,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RequestHandler {
 
@@ -1233,7 +1235,121 @@ public class RequestHandler {
 				return "901 " + e.getMessage();
 			}
         } 
+
+
+
+
+
+
+
+
+
+
+
+		else if (code.equals("501")) {
+			String report = "601 ";
+			Map<String, Double> total = new HashMap<>();
+			String agenciaId;
+			String precioTotal;
+			String agenciaNombre = null;
+			ArrayList<String> array = new ArrayList<>();
 		
+			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT agencia_id, precio_total FROM Reserva ")) {
+					while (rs.next()) {
+					
+					agenciaId = rs.getString("agencia_id");
+					precioTotal = rs.getString("precio_total");
+					if (agenciaId == null || agenciaId.isEmpty()) {
+						continue; // Skip if agencia_id is null or empty
+					}
+					try (Statement stmt2 = conn.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Agencia WHERE agencia_id = '" + agenciaId + "'")) {
+						if (rs2.next()) {
+							agenciaNombre = rs2.getString("nombre");
+						} else {
+							agenciaNombre = "No Asignada";
+						}
+					array.add(agenciaNombre + "|" + precioTotal);
+
+					} catch (SQLException e) {
+						return "900 " + e.getMessage();
+					}
+					 
+				}
+
+				for (String entry : array) {
+					String[] parts = entry.split("\\|");
+					if (parts.length == 2) {
+						String agencia = parts[0];
+						Double precio = Double.valueOf(parts[1]);
+						if (total.containsKey(agencia)) {
+							total.put(agencia, total.get(agencia) + precio);
+						} else {
+							total.put(agencia, precio);
+						}
+					}
+				}
+
+				for (Map.Entry<String, Double> entry : total.entrySet()) {
+					report += "|" + entry.getKey() + "|" + entry.getValue() + "|%";
+				}
+				
+				return report;
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+		}
+		
+
+		else if (code.equals("502")) {
+			String report = "602 ";
+			Map<String, Double> total = new HashMap<>();
+			String fecha;
+			String precioTotal;
+			ArrayList<String> array = new ArrayList<>();
+		
+			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT fecha_inicio, precio_total FROM Reserva ")) {
+					while (rs.next()) {
+					
+					fecha = rs.getString("fecha_inicio").substring(0,7);
+					precioTotal = rs.getString("precio_total");
+					if (fecha == null || fecha.isEmpty()) {
+						continue; // Skip if agencia_id is null or empty
+					}
+					
+					array.add(fecha + "|" + precioTotal);
+
+					
+					 
+				}
+				
+
+				for (String entry : array) {
+					String[] parts = entry.split("\\|");
+					if (parts.length == 2) {
+						String agencia = parts[0];
+						Double precio = Double.valueOf(parts[1]);
+						if (total.containsKey(agencia)) {
+							total.put(agencia, total.get(agencia) + precio);
+						} else {
+							total.put(agencia, precio);
+						}
+					}
+				}
+
+				for (Map.Entry<String, Double> entry : total.entrySet()) {
+					report += "|" + entry.getKey() + "|" + entry.getValue() + "|%";
+				}
+				
+				return report;
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+		}
+
 		else {
             return "What? Didn't understand that";
         }

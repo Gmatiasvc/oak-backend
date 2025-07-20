@@ -76,6 +76,8 @@ VALID CODES:
 *404 -> Elimina una fila de la tabla Cliente
 *405 -> Elimina una fila de la tabla Reserva
 
+*501 -> Genera un balance de ganancias por Agencia
+*502 -> Genera un balance de ganancias por Mes
 
 000: Ping response
 999: Disconnection reply
@@ -94,7 +96,8 @@ VALID CODES:
 209 -> Respuesta de lista las placas de los automoviles
 210 -> Respuesta de lista las ids de las reservas de la tabla Reserva
 
-
+601 -> Reporte de ganancias por Agencia
+602 -> Reporte de ganancias por Mes
 
 211 (..) 299 -> Reservado
 
