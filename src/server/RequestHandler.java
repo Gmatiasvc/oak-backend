@@ -106,6 +106,14 @@ public class RequestHandler {
             return "000 Pong";	
         } 
 		
+
+
+
+
+
+
+
+
 		
 		else if (code.equals("101")) {
             String agencias = "201 ";
@@ -199,28 +207,28 @@ public class RequestHandler {
 			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Reserva")) {
 				
 				while (rs.next()) {
-					String clienteNombre = "No Asignado";
+					String clienteNombre = "No Asignado Nombre";
 					try (Statement stmt2 = conn.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Cliente WHERE cliente_id = '" + rs.getString("cliente_id") + "'")) {
 						if (rs2.next()) {
 							clienteNombre = rs2.getString("nombre");
 						}
 					}
 	
-					String agenciaNombre = "No Asignada";
+					String agenciaNombre = "No Asignada Agencia";
 					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT nombre FROM Agencia WHERE agencia_id = '" + rs.getString("agencia_id") + "'")) {
 						if (rs3.next()) {
 							agenciaNombre = rs3.getString("nombre");
 						}
 					}
 
-					String placas = "No Asignado";
+					String placas = "No Asignado Placas";
 					try (Statement stmt3 = conn.createStatement(); ResultSet rs3 = stmt3.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
 						if (rs3.next()) {
 							agenciaNombre = rs3.getString("nombre");
 						}
 					}
 					
-					reservas += "|" + rs.getString("reserva_id")+ "|"+placas+ "|"+ clienteNombre + "|"+ agenciaNombre + "|"+ rs.getTimestamp("fecha_inicio") + "|"+ rs.getTimestamp("fecha_fin") + "|"+ rs.getString("precio_total") + "|"+ (rs.getInt("entregado") == 1 ? "Sí" : "No")+ "|"+(rs.getInt("entregado") == 1 ? "Sí" : "No")+ "|%";
+					reservas += "|" + rs.getString("reserva_id")+ "|"+placas+ "|"+ clienteNombre + "|"+ agenciaNombre + "|"+ rs.getTimestamp("fecha_inicio") + "|"+ rs.getTimestamp("fecha_fin") + "|"+ rs.getString("precio_total") + "|"+ (rs.getInt("entregado") == 1 ? "Sí" : "No")+ "|%";
 
 					try (Statement stmt4 = conn.createStatement(); ResultSet rs4 = stmt4.executeQuery("SELECT placa FROM Reserva_Automovil WHERE reserva_id = '" + rs.getString("reserva_id") + "'")) {
 						if (rs4.next()) {
@@ -432,6 +440,18 @@ public class RequestHandler {
 			return clientes;
         } 
 		
+
+
+
+
+
+
+
+
+
+
+
+
 		
 		else if (code.equals("301")) {
 			ArrayList<String> agencias = arrayReconstructor(request.substring(4));
@@ -802,6 +822,14 @@ public class RequestHandler {
 				stmt.setString(1, nombre);
 				stmt.setString(2, direccion);
 				stmt.setString(3, telefono);
+				// Check if sponsor_id exists
+				try (Statement stmt2 = conn.createStatement(); ResultSet rs = stmt2.executeQuery("SELECT cliente_id FROM Cliente WHERE dni = '" + sponsor_id + "'")) {
+					if (rs.next()) {
+						sponsor_id = rs.getString("cliente_id");
+					} else {
+						return "801 Sponsor not found";
+					}
+				}
 				stmt.setString(4, sponsor_id);
 				stmt.setString(5, dni);
 				int rowsAffected = stmt.executeUpdate();
@@ -817,6 +845,72 @@ public class RequestHandler {
 				return "901 " + e.getMessage();
 			}
         } 
+
+
+		
+		else if (code.equals("312")) {
+			ArrayList<String> agencias = arrayReconstructor(request.substring(4));
+			if (agencias.size() < 7) {
+				return "801 Not enough data";
+			}
+
+			String cliente_id = agencias.get(0);
+			String agencia_id = agencias.get(1);
+			String fecha_inicio = agencias.get(2);
+			String fecha_fin = agencias.get(3);
+			String precio_total = agencias.get(4);
+			String entregado = agencias.get(5);
+			String reserva_id = agencias.get(6);
+
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("update Reserva set cliente_id=?, agencia_id=?, fecha_inicio=?, fecha_fin=?, precio_total=?, entregado=? where reserva_id=?")) {
+				
+				try (Statement stmt2 = conn.createStatement(); ResultSet rs = stmt2.executeQuery("SELECT cliente_id FROM Cliente WHERE dni = '" + cliente_id + "'")) {
+					if (rs.next()) {
+						cliente_id = rs.getString("cliente_id");
+					}
+				}
+
+
+			try (Statement stmt3 = conn.createStatement(); ResultSet rs2 = stmt3.executeQuery("SELECT agencia_id FROM Agencia WHERE nombre = '" + agencia_id + "'")) {
+				if (rs2.next()) {
+					agencia_id = rs2.getString("agencia_id");
+				}
+			}
+
+			if (entregado.equalsIgnoreCase("No")) {
+				entregado = "0";
+			}
+			else if (entregado.equalsIgnoreCase("Si")) {
+				entregado = "1";
+			}
+				stmt.setString(1, cliente_id);
+				stmt.setString(2, agencia_id);
+				stmt.setTimestamp(3, Timestamp.valueOf(fecha_inicio));
+				stmt.setTimestamp(4, Timestamp.valueOf(fecha_fin));
+				stmt.setString(5, precio_total);
+				stmt.setString(6, entregado);
+				stmt.setString(7, reserva_id);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+
+
+
+
+
+
+
+
+
 
 
 		else if (code.equals("401")) {
@@ -897,6 +991,30 @@ public class RequestHandler {
 			System.out.println("Cliente ID: " + cliente_id);
 			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("delete from Cliente where dni=?")) {
 				stmt.setString(1, cliente_id);
+				int rowsAffected = stmt.executeUpdate();
+				if (rowsAffected > 0) {
+					return "800";
+				} else {
+					return "801";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+        } 
+		
+
+		else if (code.equals("405")) {
+			ArrayList<String> datos = arrayReconstructor(request.substring(4));
+			if (datos.size() < 1) {
+				return "801 Not enough data";
+			}
+			String reserva_id = datos.get(0);
+
+			try (Connection conn = DBConnection.realizarConexion(); PreparedStatement stmt = conn.prepareStatement("delete from Reserva where reserva_id=?")) {
+				
+				stmt.setString(1, reserva_id);
 				int rowsAffected = stmt.executeUpdate();
 				if (rowsAffected > 0) {
 					return "800";

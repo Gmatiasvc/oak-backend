@@ -50,6 +50,7 @@ VALID CODES:
 *309 -> Actualiza una fila de la tabla Garaje usando garaje_id
 *310 -> Actualiza una fila de la tabla Automovil usando automovil_id
 *311 -> Actualiza una fila de la tabla Cliente usando dni
+*312 -> Actualiza una fila de la tabla Agencia usando reserva_id
 
 
 
@@ -61,6 +62,7 @@ VALID CODES:
 *402 -> Elimina una fila de la tabla Garaje
 *403 -> Elimina una fila de la tabla Automovil
 *404 -> Elimina una fila de la tabla Cliente
+*405 -> Elimina una fila de la tabla Reserva
 
 
 000: Ping response

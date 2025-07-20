@@ -4,18 +4,60 @@
  */
 package client.gui.presentacion.Empleado;
 
+import client.ClientInstance;
+import client.gui.Roles.JfrmLogin;
+import share.VanityConsole;
+
+import java.awt.BorderLayout;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import org.netbeans.lib.awtextra.AbsoluteLayout;
+
+
+
+
+
 /**
  *
  * @author jhose
  */
 public class JfrmPrincipalEmpleado extends javax.swing.JFrame {
-
+	ClientInstance clientInstance = new ClientInstance();
+	String response;
     /**
      * Creates new form JfrmPrincipalEmpleado
      */
     public JfrmPrincipalEmpleado() {
         initComponents();
         this.setLocationRelativeTo(null);
+        btnOpciones = new javax.swing.ButtonGroup();
+        btnOpciones.add(jrbReservas);
+        btnOpciones.add(jrbClientes);	 
+		try {
+
+			clientInstance.connect("localhost", 6969);
+			clientInstance.sendMessage("001 CONEXION EMPLEADO");
+			response = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			VanityConsole.shout(response);
+
+		} catch (IOException e) {
+	    	new javax.swing.JOptionPane().showMessageDialog(this, "Error al conectar con el servidor: " + e.getMessage(), "Error de conexión", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+
+		} catch (InterruptedException e) {
+			    	new javax.swing.JOptionPane().showMessageDialog(this, "Error de tiempo de espera: " + e.getMessage(), "Error de conexión", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}
+    }
+
+    private void cargarPanel(javax.swing.JPanel panel) {
+        panel.setSize(1400, 800);
+        panel.setLocation(0, 0);
+        panContenido.removeAll();
+        panContenido.add(panel, BorderLayout.CENTER);
+        panContenido.revalidate();
+        panContenido.repaint();
     }
 
     /**
@@ -27,38 +69,153 @@ public class JfrmPrincipalEmpleado extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jMenuBar1 = new javax.swing.JMenuBar();
-        mnuGestionClientes = new javax.swing.JMenu();
-        mnuGenerarReservas = new javax.swing.JMenu();
-        mnuReportes = new javax.swing.JMenu();
+        btnOpciones = new javax.swing.ButtonGroup();
+        panContenido = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        panVerde = new javax.swing.JPanel();
+        lblTitulo = new javax.swing.JLabel();
+        lblEmpleado = new javax.swing.JLabel();
+        PanBlanco = new javax.swing.JPanel();
+        jrbReservas = new javax.swing.JRadioButton();
+        jrbClientes = new javax.swing.JRadioButton();
+        btnSalir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Empleado");
+        getContentPane().setLayout(new AbsoluteLayout());
 
-        mnuGestionClientes.setText("Gestion clientes");
-        jMenuBar1.add(mnuGestionClientes);
+        panContenido.setBackground(new java.awt.Color(255, 255, 255));
+        panContenido.setPreferredSize(new java.awt.Dimension(1400, 800));
 
-        mnuGenerarReservas.setText("Generar reservas");
-        jMenuBar1.add(mnuGenerarReservas);
+        //jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Empleado2.png"))); // NOI18N
 
-        mnuReportes.setText("Reportes");
-        jMenuBar1.add(mnuReportes);
-
-        setJMenuBar(jMenuBar1);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1400, Short.MAX_VALUE)
+        javax.swing.GroupLayout panContenidoLayout = new javax.swing.GroupLayout(panContenido);
+        panContenido.setLayout(panContenidoLayout);
+        panContenidoLayout.setHorizontalGroup(
+            panContenidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panContenidoLayout.createSequentialGroup()
+                .addContainerGap(444, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(444, 444, 444))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 877, Short.MAX_VALUE)
+        panContenidoLayout.setVerticalGroup(
+            panContenidoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panContenidoLayout.createSequentialGroup()
+                .addGap(202, 202, 202)
+                .addComponent(jLabel1)
+                .addContainerGap(202, Short.MAX_VALUE))
         );
+
+        getContentPane().add(panContenido, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 100, -1, 800));
+
+        panVerde.setBackground(new java.awt.Color(8, 156, 12));
+        panVerde.setPreferredSize(new java.awt.Dimension(1630, 100));
+
+        lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblTitulo.setForeground(new java.awt.Color(0, 0, 0));
+        lblTitulo.setText("La venganza");
+
+        lblEmpleado.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblEmpleado.setForeground(new java.awt.Color(0, 0, 0));
+        lblEmpleado.setText("EMPLEADO");
+
+        javax.swing.GroupLayout panVerdeLayout = new javax.swing.GroupLayout(panVerde);
+        panVerde.setLayout(panVerdeLayout);
+        panVerdeLayout.setHorizontalGroup(
+            panVerdeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panVerdeLayout.createSequentialGroup()
+                .addGap(66, 66, 66)
+                .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1186, Short.MAX_VALUE)
+                .addComponent(lblEmpleado)
+                .addGap(66, 66, 66))
+        );
+        panVerdeLayout.setVerticalGroup(
+            panVerdeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panVerdeLayout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(panVerdeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTitulo)
+                    .addComponent(lblEmpleado))
+                .addContainerGap(27, Short.MAX_VALUE))
+        );
+
+        getContentPane().add(panVerde, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1630, 100));
+
+        PanBlanco.setBackground(new java.awt.Color(255, 255, 255));
+        PanBlanco.setPreferredSize(new java.awt.Dimension(230, 800));
+
+        jrbReservas.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jrbReservas.setText("Reservas");
+        jrbReservas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jrbReservasActionPerformed(evt);
+            }
+        });
+
+        jrbClientes.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jrbClientes.setText("Clientes");
+        jrbClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jrbClientesActionPerformed(evt);
+            }
+        });
+
+        btnSalir.setBackground(new java.awt.Color(8, 156, 12));
+        btnSalir.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btnSalir.setText("Salir");
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalirActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout PanBlancoLayout = new javax.swing.GroupLayout(PanBlanco);
+        PanBlanco.setLayout(PanBlancoLayout);
+        PanBlancoLayout.setHorizontalGroup(
+            PanBlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanBlancoLayout.createSequentialGroup()
+                .addGap(54, 54, 54)
+                .addGroup(PanBlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jrbClientes)
+                    .addComponent(jrbReservas)
+                    .addGroup(PanBlancoLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(btnSalir)))
+                .addContainerGap(51, Short.MAX_VALUE))
+        );
+        PanBlancoLayout.setVerticalGroup(
+            PanBlancoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PanBlancoLayout.createSequentialGroup()
+                .addGap(75, 75, 75)
+                .addComponent(jrbReservas)
+                .addGap(18, 18, 18)
+                .addComponent(jrbClientes)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 477, Short.MAX_VALUE)
+                .addComponent(btnSalir)
+                .addGap(113, 113, 113))
+        );
+
+        getContentPane().add(PanBlanco, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jrbReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbReservasActionPerformed
+        PanGestionReservaEmpleado panel = new PanGestionReservaEmpleado(clientInstance);
+        cargarPanel(panel);
+    }//GEN-LAST:event_jrbReservasActionPerformed
+
+    private void jrbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbClientesActionPerformed
+        PanGestionClienteEmpleado panel = new PanGestionClienteEmpleado(clientInstance);
+        cargarPanel(panel);
+    }//GEN-LAST:event_jrbClientesActionPerformed
+
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        this.dispose();
+        JfrmLogin login = new JfrmLogin();
+        login.setVisible(true);
+    }//GEN-LAST:event_btnSalirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -88,17 +245,22 @@ public class JfrmPrincipalEmpleado extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new JfrmPrincipalEmpleado().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new JfrmPrincipalEmpleado().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenu mnuGenerarReservas;
-    private javax.swing.JMenu mnuGestionClientes;
-    private javax.swing.JMenu mnuReportes;
+    private javax.swing.JPanel PanBlanco;
+    private javax.swing.ButtonGroup btnOpciones;
+    private javax.swing.JButton btnSalir;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JRadioButton jrbClientes;
+    private javax.swing.JRadioButton jrbReservas;
+    private javax.swing.JLabel lblEmpleado;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JPanel panContenido;
+    private javax.swing.JPanel panVerde;
     // End of variables declaration//GEN-END:variables
+	
 }
