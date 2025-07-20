@@ -50,6 +50,34 @@ public class PanGestionAutomovilesAdministrador extends javax.swing.JPanel {
 			}
 		}
 	}
+
+	private void populateTableWithData(String msg){
+		// Clear the table before populating it
+		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblGestionAutomovil.getModel();
+		model.setRowCount(0); 
+		clientInstance.sendMessage(msg);
+		String raw;
+		try {
+			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			raw = raw.substring(3);
+		} catch (InterruptedException e) {
+			raw = "|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|";
+		}
+		ArrayList<String> rows = RequestHandler.superArrayReconstructor(raw);
+		
+		for (String i : rows) {
+			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
+			if (row.size() == 6) {
+				model = (javax.swing.table.DefaultTableModel) tblGestionAutomovil.getModel();
+				model.addRow(new Object[]{row.get(0), row.get(1), row.get(2), row.get(3), row.get(4), row.get(5)});
+			} else {
+				System.out.println("Error: Row does not contain exactly 6 elements. "+
+						"Received: " + row.size() + " elements." + i);
+			}
+		}
+	}
+
+	
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -153,10 +181,18 @@ public class PanGestionAutomovilesAdministrador extends javax.swing.JPanel {
 
         btnConsultarMarca.setBackground(new java.awt.Color(8, 156, 12));
         //btnConsultarMarca.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
-
+		btnConsultarMarca.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btnConsultarMarcaMouseClicked(evt);
+			}
+		});
         btnConsultarPlaca.setBackground(new java.awt.Color(8, 156, 12));
         //btnConsultarPlaca.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
-
+		btnConsultarPlaca.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btnConsultarPlacaMouseClicked(evt);
+			}
+		});
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -344,6 +380,26 @@ public class PanGestionAutomovilesAdministrador extends javax.swing.JPanel {
 		}
 	}//GEN-LAST:event_btnActualizarMouseClicked
 
+	private void btnConsultarMarcaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarMarcaMouseClicked
+		String marca = txtBuscarMarca.getText();
+		if (marca.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Please enter a marca to search.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: Please enter a marca to search.");
+			return;
+		}
+		String msg = "110 " + marca;
+		populateTableWithData(msg);
+	}//GEN-LAST:event_btnConsultarMarcaMouseClicked
+	private void btnConsultarPlacaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarPlacaMouseClicked
+		String placa = txtBuscarPlaca.getText();
+		if (placa.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Please enter a placa to search.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: Please enter a placa to search.");
+			return;
+		}
+		String msg = "111 " + placa;
+		populateTableWithData(msg);
+	}//GEN-LAST:event_btnConsultarPlacaMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;

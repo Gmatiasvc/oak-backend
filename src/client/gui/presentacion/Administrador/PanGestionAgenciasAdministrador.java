@@ -51,6 +51,32 @@ public class PanGestionAgenciasAdministrador extends javax.swing.JPanel {
 		}
 	}
 
+	private void populateTableWithData(String msg){
+		// Clear the table before populating it
+		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblGestionAgencias.getModel();
+		model.setRowCount(0); 
+		clientInstance.sendMessage(msg);
+		String raw;
+		try {
+			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			raw = raw.substring(3);
+		} catch (InterruptedException e) {
+			raw = "|Error receiving data|Error receiving data|Error receiving data|";
+		}
+		ArrayList<String> rows = RequestHandler.superArrayReconstructor(raw);
+		
+		for (String i : rows) {
+			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
+			if (row.size() == 3) {
+				model = (javax.swing.table.DefaultTableModel) tblGestionAgencias.getModel();
+				model.addRow(new Object[]{row.get(0), row.get(1), row.get(2)});
+			} else {
+				System.out.println("Error: Row does not contain exactly 3 elements. "+
+						"Received: " + row.size() + " elements." + i);
+			}
+		}
+	}
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -135,16 +161,23 @@ public class PanGestionAgenciasAdministrador extends javax.swing.JPanel {
             }
         });
         lblBuscarNombre.setText("Buscar por nombre");
-
-        lblBuscarAgencia.setText("Buscar por agencia");
+		
+        lblBuscarAgencia.setText("Buscar por direccion");
 
         btnConsultarAgencia.setBackground(new java.awt.Color(8, 156, 12));
         //btnConsultarAgencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
-        btnConsultarAgencia.setToolTipText("");
-
+		btnConsultarAgencia.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btnConsultarAgenciaMouseClicked(evt);
+			}
+		});
         btnConsultarNombre.setBackground(new java.awt.Color(8, 156, 12));
         //btnConsultarNombre.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
-
+		btnConsultarNombre.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btnConsultarNombreMouseClicked(evt);
+			}
+		});
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -299,6 +332,26 @@ public class PanGestionAgenciasAdministrador extends javax.swing.JPanel {
 			System.out.println("Error updating agency: " + response);
 		}
 	}//GEN-LAST:event_btnActualizarMouseClicked
+
+	private void btnConsultarAgenciaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarAgenciaMouseClicked
+		String agencia = txtBuscarAgencia.getText();
+		if (agencia.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Please enter an agency to search.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: Please enter an agency to search.");
+			return;
+		}
+		populateTableWithData("107 " + agencia);
+
+	}//GEN-LAST:event_btnConsultarAgenciaMouseClicked
+	private void btnConsultarNombreMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarNombreMouseClicked
+		String nombre = txtBuscarNombre.getText();
+		if (nombre.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Please enter a name to search.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: Please enter a name to search.");
+			return;
+		}
+		populateTableWithData("106 " + nombre);
+	}//GEN-LAST:event_btnConsultarNombreMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;

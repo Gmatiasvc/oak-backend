@@ -54,6 +54,35 @@ public class PanGestionClientesAdministrador extends javax.swing.JPanel {
 			}
 		}
 	}
+
+	private void populateTableWithData(String msg){
+		// Clear the table before populating it
+		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblGestionClientes.getModel();
+		model.setRowCount(0); 
+		clientInstance.sendMessage(msg);
+		String raw;
+		try {
+			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			raw = raw.substring(3);
+		} catch (InterruptedException e) {
+			raw = "|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|Error receiving data|";
+		}
+		ArrayList<String> rows = RequestHandler.superArrayReconstructor(raw);
+		
+		for (String i : rows) {
+			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
+			if (row.size() == 5) {
+				if (!row.get(0).equals("No Asignado")) {
+					model = (javax.swing.table.DefaultTableModel) tblGestionClientes.getModel();
+					model.addRow(new Object[]{row.get(0), row.get(1), row.get(2), row.get(3), row.get(4)});
+				}
+				
+			} else {
+				System.out.println("Error: Row does not contain exactly 5 elements. "+
+						"Received: " + row.size() + " elements." + i);
+			}
+		}
+	}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -159,10 +188,19 @@ public class PanGestionClientesAdministrador extends javax.swing.JPanel {
 
         btnConsultarDni.setBackground(new java.awt.Color(8, 156, 12));
         //btnConsultarDni.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
+		btnConsultarDni.addMouseListener(new java.awt.event.MouseAdapter() {
+		public void mouseClicked(java.awt.event.MouseEvent evt) {
+			btnConsultarDniMouseClicked(evt);
+			}
+		});
 
         btnConsultarSponsor.setBackground(new java.awt.Color(8, 156, 12));
         //btnConsultarSponsor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
-
+		btnConsultarSponsor.addMouseListener(new java.awt.event.MouseAdapter() {
+		public void mouseClicked(java.awt.event.MouseEvent evt) {
+			btnConsultarSponsorMouseClicked(evt);
+			}
+		}); 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -360,6 +398,26 @@ public class PanGestionClientesAdministrador extends javax.swing.JPanel {
 		}
 	}//GEN-LAST:event_btnActualizarMouseClicked
 
+	private void btnConsultarDniMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarDniMouseClicked
+		String dni = txtBuscarNombre.getText();
+		if (dni.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Please enter a DNI to search.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: Please enter a DNI to search.");
+			return;
+		}
+		populateTableWithData("112 " + "|" + dni);
+		System.out.println("Searching for client with DNI: " + dni);
+	}//GEN-LAST:event_btnConsultarDniMouseClicked
+	private void btnConsultarSponsorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarSponsorMouseClicked
+		String sponsor = txtBuscarAgencia.getText();
+		if (sponsor.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Please enter a Sponsor to search.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: Please enter a Sponsor to search.");
+			return;
+		}
+		populateTableWithData("113 " + "|" + sponsor);
+		System.out.println("Searching for clients with Sponsor: " + sponsor);
+	}//GEN-LAST:event_btnConsultarSponsorMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;

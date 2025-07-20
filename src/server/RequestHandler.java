@@ -239,8 +239,198 @@ public class RequestHandler {
 			return reservas;
         } 
 		
+		else if (code.equals("106")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+			            String agencias = "206 ";
+            try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT agencia_id, nombre,direccion FROM Agencia where nombre="+ "'" + data.get(0) + "'")) {
+                while (rs.next()) {
+                    agencias = agencias + "|" +rs.getString("agencia_id")+ "|" + rs.getString("nombre") + "|" + rs.getString("direccion") + "|%";
+                }
+            } catch (SQLException e) {
+                return "900 " + e.getMessage();
+            } catch (ClassNotFoundException e) {
+                return "901 " + e.getMessage();
+            }
+            return agencias;
+        } 
 		
 		
+		else if (code.equals("107")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+			String agencias = "207 ";
+            try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT agencia_id, nombre,direccion FROM Agencia where direccion="+ "'" + data.get(0) + "'")) {
+                while (rs.next()) {
+                    agencias = agencias + "|" +rs.getString("agencia_id")+ "|" + rs.getString("nombre") + "|" + rs.getString("direccion") + "|%";
+                }
+            } catch (SQLException e) {
+                return "900 " + e.getMessage();
+            } catch (ClassNotFoundException e) {
+                return "901 " + e.getMessage();
+            }
+            return agencias;
+        } 
+		
+				
+		else if (code.equals("108")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+			            String agencias = "208 ";
+            try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Garaje where nombre="+ "'" + data.get(0) + "'")) {
+                while (rs.next()) {
+                    agencias = agencias + "|" +rs.getString("garaje_id")+ "|" + rs.getString("nombre") + "|" + rs.getString("ubicacion") + "|%";
+                }
+            } catch (SQLException e) {
+                return "900 " + e.getMessage();
+            } catch (ClassNotFoundException e) {
+                return "901 " + e.getMessage();
+            }
+            return agencias;
+        } 
+		
+		
+		else if (code.equals("109")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+			String agencias = "209 ";
+            try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Garaje where ubicacion="+ "'" + data.get(0) + "'")) {
+                while (rs.next()) {
+                    agencias = agencias + "|" +rs.getString("garaje_id")+ "|" + rs.getString("nombre") + "|" + rs.getString("ubicacion") + "|%";
+                }
+            } catch (SQLException e) {
+                return "900 " + e.getMessage();
+            } catch (ClassNotFoundException e) {
+                return "901 " + e.getMessage();
+            }
+            return agencias;
+        } 
+		
+		
+		
+		else if (code.equals("110")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+			String automoviles = "210 ";
+			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Automovil where placa = '" + data.get(0) + "'")) {
+				while (rs.next()) {
+					String garajeNombre = "";
+					try (Statement stmt2 = conn.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Garaje WHERE garaje_id = '" + rs.getString("garaje_id") + "'")) {
+						if (rs2.next()) {
+							garajeNombre = rs2.getString("nombre");
+						}
+					}
+	
+					automoviles += "|" + rs.getString("placa") + "|" + rs.getString("modelo")
+							+ "|" + rs.getString("color") + "|" + rs.getString("marca") + "|" + rs.getString("estado")
+							+ "|" + garajeNombre + "|%";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+			return automoviles;
+        } 
+		
+		
+		else if (code.equals("111")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+			String automoviles = "211 ";
+			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Automovil where marca = '" + data.get(0) + "'")) {
+				while (rs.next()) {
+					String garajeNombre = "";
+					try (Statement stmt2 = conn.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Garaje WHERE garaje_id = '" + rs.getString("garaje_id") + "'")) {
+						if (rs2.next()) {
+							garajeNombre = rs2.getString("nombre");
+						}
+					}
+	
+					automoviles += "|" + rs.getString("placa") + "|" + rs.getString("modelo")
+							+ "|" + rs.getString("color") + "|" + rs.getString("marca") + "|" + rs.getString("estado")
+							+ "|" + garajeNombre + "|%";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+			return automoviles;
+        } 
+		
+		
+		else if (code.equals("112")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+			String clientes = "212 ";
+			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Cliente where dni = '" + data.get(0) + "'")) {
+				while (rs.next()) {
+					if (rs.getString("sponsor_id") != null) {
+						String sponsorNombre = "Sin Sponsor";
+						try (Connection conn2 = DBConnection.realizarConexion(); Statement stmt2 = conn2.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Cliente where cliente_id = '" + rs.getString("sponsor_id") + "'")) {
+							while (rs2.next()) {
+								sponsorNombre = rs2.getString("nombre");
+							}
+						} catch (SQLException e) {
+							return "900 " + e.getMessage();
+						} catch (ClassNotFoundException e) {
+							return "901 " + e.getMessage();
+						}
+	
+						clientes += "|" + rs.getString("dni") + "|" + rs.getString("nombre")
+								+ "|" + rs.getString("direccion") + "|" + rs.getString("telefono")
+								+ "|" + sponsorNombre + "|%";
+					} else {
+						clientes += "|" + rs.getString("dni") + "|" + rs.getString("nombre")
+								+ "|" + rs.getString("direccion") + "|" + rs.getString("telefono") + "|6|%";
+					}
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+			return clientes;
+        } 
+		
+		else if (code.equals("113")) {
+			ArrayList<String> data = arrayReconstructor(request.substring(4));
+			String sponsor_id;
+			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT cliente_id FROM Cliente where dni = '" + data.get(0) + "'")) {
+				if (rs.next()) {
+					sponsor_id = rs.getString("cliente_id");
+				} else {
+					return "801 Sponsor not found";
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+			String clientes = "213 ";
+			try (Connection conn = DBConnection.realizarConexion(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM Cliente where sponsor_id = '" + sponsor_id + "'")) {
+				while (rs.next()) {
+					if (rs.getString("sponsor_id") != null) {
+						String sponsorNombre = "Sin Sponsor";
+						try (Connection conn2 = DBConnection.realizarConexion(); Statement stmt2 = conn2.createStatement(); ResultSet rs2 = stmt2.executeQuery("SELECT nombre FROM Cliente where cliente_id = '" + rs.getString("sponsor_id") + "'")) {
+							while (rs2.next()) {
+								sponsorNombre = rs2.getString("nombre");
+							}
+						} catch (SQLException e) {
+							return "900 " + e.getMessage();
+						} catch (ClassNotFoundException e) {
+							return "901 " + e.getMessage();
+						}
+	
+						clientes += "|" + rs.getString("dni") + "|" + rs.getString("nombre")
+								+ "|" + rs.getString("direccion") + "|" + rs.getString("telefono")
+								+ "|" + sponsorNombre + "|%";
+					} else {
+						clientes += "|" + rs.getString("dni") + "|" + rs.getString("nombre")
+								+ "|" + rs.getString("direccion") + "|" + rs.getString("telefono") + "|6|%";
+					}
+				}
+			} catch (SQLException e) {
+				return "900 " + e.getMessage();
+			} catch (ClassNotFoundException e) {
+				return "901 " + e.getMessage();
+			}
+			return clientes;
+        } 
 		
 		
 		else if (code.equals("301")) {

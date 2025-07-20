@@ -25,11 +25,36 @@ public class PanGestionGarajeAdministrador extends javax.swing.JPanel {
 		this.clientInstance = clientInstance;
 		populateTable();
     }
-private void populateTable(){
+	private void populateTable(){
 		// Clear the table before populating it
 		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblGestionGaraje.getModel();
 		model.setRowCount(0); 
 		clientInstance.sendMessage("102");
+		String raw;
+		try {
+			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
+			raw = raw.substring(3);
+		} catch (InterruptedException e) {
+			raw = "|Error receiving data|Error receiving data|Error receiving data|";
+		}
+		ArrayList<String> rows = RequestHandler.superArrayReconstructor(raw);
+		
+		for (String i : rows) {
+			ArrayList<String> row = RequestHandler.arrayReconstructor(i);
+			if (row.size() == 3) {
+				model = (javax.swing.table.DefaultTableModel) tblGestionGaraje.getModel();
+				model.addRow(new Object[]{row.get(0), row.get(1), row.get(2)});
+			} else {
+				System.out.println("Error: Row does not contain exactly 3 elements. "+
+						"Received: " + row.size() + " elements." + i);
+			}
+		}
+	}
+	private void populateTableWithData(String msg){
+		// Clear the table before populating it
+		javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblGestionGaraje.getModel();
+		model.setRowCount(0); 
+		clientInstance.sendMessage( msg);
 		String raw;
 		try {
 			raw = clientInstance.receiveMessage(2, TimeUnit.SECONDS);
@@ -60,7 +85,7 @@ private void populateTable(){
     private void initComponents() {
 
         lblGaraje = new javax.swing.JLabel();
-        lblBuscarGaraje = new javax.swing.JLabel();
+        lblBuscarUbicacion = new javax.swing.JLabel();
         lblNombre = new javax.swing.JLabel();
         txtBuscarNombre = new javax.swing.JTextField();
         lblUbicacion = new javax.swing.JLabel();
@@ -75,7 +100,7 @@ private void populateTable(){
         btnEliminar = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         lblBuscarNombre = new javax.swing.JLabel();
-        btnConsultarNombre = new javax.swing.JButton();
+        btnConsultarDireccion = new javax.swing.JButton();
         btnConsultarGaraje = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
@@ -83,7 +108,7 @@ private void populateTable(){
 
         lblGaraje.setText("Garaje");
 
-        lblBuscarGaraje.setText("Buscar por garaje");
+        lblBuscarUbicacion.setText("Buscar por ubicacion");
 
         lblNombre.setText("Nombre");
 
@@ -144,12 +169,20 @@ private void populateTable(){
 
         lblBuscarNombre.setText("Buscar por nombre");
 
-        btnConsultarNombre.setBackground(new java.awt.Color(8, 156, 12));
-        //btnConsultarNombre.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
-
+        btnConsultarDireccion.setBackground(new java.awt.Color(8, 156, 12));
+        //btnConsultarDireccion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
+		btnConsultarDireccion.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btnConsultarDireccionMouseClicked(evt);
+			}
+		});
         btnConsultarGaraje.setBackground(new java.awt.Color(8, 156, 12));
         //btnConsultarGaraje.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Buscar.png"))); // NOI18N
-
+		btnConsultarGaraje.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				btnConsultarAgenciaMouseClicked(evt);
+			}
+		});
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -170,7 +203,7 @@ private void populateTable(){
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton4)
-                            .addComponent(lblBuscarGaraje)
+                            .addComponent(lblBuscarUbicacion)
                             .addComponent(lblBuscarNombre))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -184,7 +217,7 @@ private void populateTable(){
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(txtBuscarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(18, 18, 18)
-                                    .addComponent(btnConsultarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 30, Short.MAX_VALUE))
+                                    .addComponent(btnConsultarDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, Short.MAX_VALUE))
                                 .addGroup(layout.createSequentialGroup()
                                     .addComponent(txtBuscarAgencia, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(18, 18, 18)
@@ -223,12 +256,12 @@ private void populateTable(){
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblBuscarNombre)
                             .addComponent(txtBuscarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnConsultarNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnConsultarDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtBuscarAgencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnConsultarGaraje, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblBuscarGaraje))))
+                            .addComponent(lblBuscarUbicacion))))
                 .addContainerGap(161, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -304,15 +337,34 @@ private void populateTable(){
 	}//GEN-LAST:event_btnActualizarMouseClicked
 
 
+	private void btnConsultarAgenciaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarAgenciaMouseClicked
+		String agencia = txtBuscarAgencia.getText();
+		if (agencia.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Please enter an agency to search.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: Please enter an agency to search.");
+			return;
+		}
+		populateTableWithData("109 " + agencia);
+
+	}//GEN-LAST:event_btnConsultarAgenciaMouseClicked
+	private void btnConsultarDireccionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConsultarDireccionMouseClicked
+		String nombre = txtBuscarNombre.getText();
+		if (nombre.isEmpty()) {
+			new javax.swing.JOptionPane().showMessageDialog(this, "Please enter a direction to search.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.out.println("Error: Please enter a name to search.");
+			return;
+		}
+		populateTableWithData("108 " + nombre);
+	}//GEN-LAST:event_btnConsultarDireccionMouseClicked
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnConsultarGaraje;
-    private javax.swing.JButton btnConsultarNombre;
+    private javax.swing.JButton btnConsultarDireccion;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnRegistrar;
     private javax.swing.JButton jButton4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel lblBuscarGaraje;
+    private javax.swing.JLabel lblBuscarUbicacion;
     private javax.swing.JLabel lblBuscarNombre;
     private javax.swing.JLabel lblGaraje;
     private javax.swing.JLabel lblNombre;
